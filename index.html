@@ -62,11 +62,24 @@ function submitForm() {
 
   showError("");
 
+  fetch("https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec", {
+  method: "POST",
+  body: JSON.stringify(data)
+})
+.then(res => res.json())
+.then(() => {
   generatePDF(data);
+  alert("Submitted successfully!");
+  document.querySelector("form")?.reset();
 
   setTimeout(() => {
     window.location.href = "thankyou.html";
   }, 500);
+})
+.catch(err => {
+  showError("Submission failed.");
+  console.log(err);
+});
 }
 
 // =========================
