@@ -11,7 +11,8 @@
 <script>
 const { jsPDF } = window.jspdf;
 
-
+// 🔗 GOOGLE SHEETS URL - MUST BE AT THE TOP!
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 
 // =========================
 // 🚀 MAIN SUBMIT FUNCTION
@@ -30,7 +31,7 @@ function submitForm() {
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // Handle "Other"
+  // Handle "Other" nationality
   const otherRadio = document.getElementById("nationality-other");
   if (otherRadio.checked) {
     const otherValue = document.getElementById("nationality-other-input").value.trim();
@@ -50,39 +51,56 @@ function submitForm() {
     }
   }
 
-  if (!/^[0-9]+$/.test(data.phone)) {
-    showError("Phone must contain only numbers.");
+  if (!/^[0-9\-]+$/.test(data.phone)) {
+    showError("Phone must contain only numbers and hyphens.");
     return;
   }
 
   showError("");
 
+  // Store name for thank you page
   localStorage.setItem("username", data.name);
 
-  generatePDF(data);
+  // 📊 SEND TO GOOGLE SHEETS - CALLED HERE!
   sendToGoogleSheets(data);
 
+  // 📄 GENERATE PDF
+  generatePDF(data);
+
+  // Redirect to thank you page
   setTimeout(() => {
     window.location.href = "thankyou.html";
-  }, 1000);
+  }, 500);
 }
+
 // =========================
 // 📊 SEND TO GOOGLE SHEETS
 // =========================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
-
 function sendToGoogleSheets(data) {
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("katakana", data.katakana);
+  formData.append("sex", data.sex);
+  formData.append("nationality", data.nationality);
+  formData.append("phone", data.phone);
+  formData.append("email", data.email);
+  formData.append("school", data.school);
+  formData.append("graduation", data.graduation);
+  formData.append("japaneseLevel", data.japaneseLevel);
+
   fetch(SCRIPT_URL, {
     method: "POST",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    body: formData
   })
-  .then(res => res.json())
-  .then(res => console.log("✅ Sent to Sheets:", res))
-  .catch(err => console.error("❌ Error:", err));
+  .then(response => response.text())
+  .then(result => {
+    console.log("✅ Data sent to Google Sheets:", result);
+  })
+  .catch(error => {
+    console.error("❌ Error sending to Google Sheets:", error);
+  });
 }
+
 // =========================
 // 📄 PDF GENERATION
 // =========================
@@ -152,6 +170,7 @@ function getRadioValue(name) {
   }
   return "";
 }
+
 function showError(msg) {
   document.getElementById("error").innerText = msg;
 }
@@ -162,6 +181,7 @@ function handleNationalityOther() {
 
   if (otherRadio.checked) {
     otherInput.disabled = false;
+    otherInput.focus();
   } else {
     otherInput.disabled = true;
     otherInput.value = "";
