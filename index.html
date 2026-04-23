@@ -14,6 +14,7 @@ const { jsPDF } = window.jspdf;
 // 🚀 SUBMIT FUNCTION
 // =========================
 function submitForm() {
+  console.log("Button clicked");
 
   const data = {
     name: document.getElementById("name").value.trim(),
@@ -27,7 +28,7 @@ function submitForm() {
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // ✅ VALIDATION
+  // VALIDATION
   for (let key in data) {
     if (!data[key]) {
       showError("Please fill all fields.");
@@ -42,29 +43,9 @@ function submitForm() {
 
   showError("");
 
-  // ✅ SEND TO GOOGLE SHEET
-  fetch("https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.text()) // safer than json()
-  .then(() => {
-    generatePDF(data);
-    alert("Submitted successfully!");
-
-    document.getElementById("myForm").reset();
-
-    setTimeout(() => {
-      window.location.href = "thankyou.html";
-    }, 500);
-  })
-  .catch(err => {
-    showError("Submission failed.");
-    console.log(err);
-  });
+  // 👉 DIRECT PDF (no fetch for testing)
+  generatePDF(data);
+  alert("PDF Downloaded!");
 }
 
 // =========================
@@ -74,61 +55,22 @@ function generatePDF(data) {
 
   const doc = new jsPDF();
 
-  // FONT
-  try {
-    doc.addFileToVFS("NotoSansJP-Regular.ttf", notoSansJPBase64);
-    doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-    doc.setFont("NotoSansJP", "normal");
-  } catch (e) {}
-
-  // HEADER
-  doc.setFillColor(30, 60, 120);
-  doc.rect(0, 0, 210, 25, "F");
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
-  doc.text("Student Information", 105, 15, { align: "center" });
-
-  doc.setTextColor(0, 0, 0);
-
-  let y = 35;
+  let y = 20;
 
   function addField(label, value) {
-    if (!value) return;
-
-    doc.setFontSize(12);
-    doc.setTextColor(30, 60, 120);
-    doc.text(label, 15, y);
-
-    doc.setTextColor(0);
-    const lines = doc.splitTextToSize(value, 120);
-    doc.text(lines, 70, y);
-
-    // 🔥 thicker + wider line
-    doc.setDrawColor(200);
-    doc.setLineWidth(0.8);
-    doc.line(10, y + 8, 205, y + 8);
-
-    y += lines.length * 6 + 12;
+    doc.text(label + ": " + value, 10, y);
+    y += 10;
   }
 
-  addField("Name / 氏名", data.name);
-  addField("Katakana / カタカナ", data.katakana);
-  addField("Sex / 性別", data.sex);
-  addField("Nationality / 国籍", data.nationality);
-  addField("Phone / 電話番号", data.phone);
-  addField("Email / メール", data.email);
-  addField("School / 学校", data.school);
-  addField("Graduation / 卒業予定", data.graduation);
-  addField("Japanese Level / 日本語", data.japaneseLevel);
-
-  const today = new Date().toLocaleDateString();
-
-  doc.setFontSize(9);
-  doc.setTextColor(120);
-  doc.text("Date: " + today, 150, 285);
-
-  doc.line(10, 280, 200, 280);
+  addField("Name", data.name);
+  addField("Katakana", data.katakana);
+  addField("Sex", data.sex);
+  addField("Nationality", data.nationality);
+  addField("Phone", data.phone);
+  addField("Email", data.email);
+  addField("School", data.school);
+  addField("Graduation", data.graduation);
+  addField("Japanese Level", data.japaneseLevel);
 
   doc.save("student_info.pdf");
 }
@@ -145,7 +87,8 @@ function getRadioValue(name) {
 }
 
 function showError(msg) {
-  document.getElementById("error").innerText = msg;
+  const el = document.getElementById("error");
+  if (el) el.innerText = msg;
 }
 
 // =========================
@@ -155,11 +98,13 @@ function handleNationalityOther() {
   const otherRadio = document.getElementById("nationality-other");
   const otherInput = document.getElementById("nationality-other-input");
 
-  if (otherRadio.checked) {
-    otherInput.disabled = false;
-  } else {
-    otherInput.disabled = true;
-    otherInput.value = "";
+  if (otherRadio && otherInput) {
+    if (otherRadio.checked) {
+      otherInput.disabled = false;
+    } else {
+      otherInput.disabled = true;
+      otherInput.value = "";
+    }
   }
 }
 
@@ -167,7 +112,7 @@ function updateOtherValue() {
   const otherRadio = document.getElementById("nationality-other");
   const otherInput = document.getElementById("nationality-other-input");
 
-  if (otherRadio.checked) {
+  if (otherRadio && otherInput && otherRadio.checked) {
     otherRadio.value = otherInput.value;
   }
 }
