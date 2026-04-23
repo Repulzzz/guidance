@@ -30,7 +30,7 @@ function submitForm() {
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // ✅ ADD HERE 👇 (before validation)
+  // ✅ Handle "Other nationality"
   const otherRadio = document.getElementById("nationality-other");
 
   if (otherRadio.checked) {
@@ -44,7 +44,7 @@ function submitForm() {
     data.nationality = otherValue;
   }
 
-  // ✅ VALIDATION (keep this AFTER the fix)
+  // ✅ Validation
   for (let key in data) {
     if (key === "email") continue;
     if (!data[key]) {
@@ -60,40 +60,39 @@ function submitForm() {
 
   showError("");
 
+  // ✅ Save name for thank you page
+  localStorage.setItem("username", data.name);
+
+  // ✅ Generate PDF
   generatePDF(data);
+
+  // ✅ Send to Google Sheets
   sendToGoogleSheets(data);
 
+  // ✅ Redirect
   setTimeout(() => {
     window.location.href = "thankyou.html";
-  }, 500);
+  }, 1000);
 }
+
+// =========================
 // 📊 SEND TO GOOGLE SHEETS
 // =========================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
-function sendToGoogleSheets(data) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("katakana", data.katakana);
-  formData.append("sex", data.sex);
-  formData.append("nationality", data.nationality);
-  formData.append("phone", data.phone);
-  formData.append("email", data.email);
-  formData.append("school", data.school);
-  formData.append("graduation", data.graduation);
-  formData.append("japaneseLevel", data.japaneseLevel);
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 
-  fetch("https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec", {
+function sendToGoogleSheets(data) {
+  fetch(SCRIPT_URL, {
     method: "POST",
-    body: formData
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    }
   })
-  .then(response => response.json())
-  .then(result => {
-    console.log("✅ Data sent to Google Sheets:", result);
-  })
-  .catch(error => {
-    console.error("❌ Error sending to Google Sheets:", error);
-  });
+  .then(res => res.json())
+  .then(res => console.log("✅ Sent to Sheets:", res))
+  .catch(err => console.error("❌ Error:", err));
 }
+
 // =========================
 // 📄 PDF GENERATION
 // =========================
@@ -101,20 +100,16 @@ function generatePDF(data) {
 
   const doc = new jsPDF();
 
-  // ✅ FONT (ONLY NORMAL — STABLE)
+  // ✅ Load Japanese font
   try {
     doc.addFileToVFS("NotoSansJP-Regular.ttf", notoSansJPBase64);
     doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-
     doc.setFont("NotoSansJP", "normal");
-    doc.setCharSpace(0);
   } catch (e) {
     console.log("Font failed");
   }
 
-  // =========================
-  // 🎨 HEADER
-  // =========================
+  // Header
   doc.setFillColor(30, 60, 120);
   doc.rect(0, 0, 210, 25, "F");
 
@@ -126,61 +121,44 @@ function generatePDF(data) {
 
   let y = 35;
 
-  // =========================
-  // 🧾 FIELD FUNCTION
-  // =========================
   function addField(label, value) {
     if (!value) return;
 
-    const textToLineGap = 8;
-    const fieldGap = 12;
-
-    // Label (blue, normal — no bold to avoid bug)
-    doc.setFont("NotoSansJP", "normal");
     doc.setFontSize(12);
     doc.setTextColor(30, 60, 120);
     doc.text(label, 15, y);
 
-    // Value
     doc.setTextColor(0);
     const lines = doc.splitTextToSize(value, 110);
     doc.text(lines, 80, y);
 
-    // Line
     doc.setDrawColor(200);
-    doc.line(15, y + textToLineGap, 200, y + textToLineGap);
+    doc.line(15, y + 8, 200, y + 8);
 
-    y += lines.length * 6 + fieldGap;
+    y += lines.length * 6 + 12;
   }
 
-  // =========================
-  // 📋 CONTENT
-  // =========================
+  // Content
   addField("Name / 氏名", data.name);
   addField("Katakana / カタカナ", data.katakana);
   addField("Sex / 性別", data.sex);
   addField("Nationality / 国籍", data.nationality);
   addField("Phone / 電話番号", data.phone);
   addField("Email / メール", data.email);
-  addField("School / 日本の在籍学校", data.school);
+  addField("School / 学校", data.school);
   addField("Graduation / 卒業予定", data.graduation);
   addField("Japanese Level / 日本語レベル", data.japaneseLevel);
 
-  // =========================
-  // 📅 FOOTER
-  // =========================
+  // Footer
   const today = new Date().toLocaleDateString();
 
   doc.setFontSize(9);
   doc.setTextColor(120);
   doc.text("Date: " + today, 150, 285);
 
-  doc.setDrawColor(30, 60, 120);
   doc.line(10, 280, 200, 280);
 
-  // =========================
-  // 💾 SAVE
-  // =========================
+  // Save
   doc.save("student_resume.pdf");
 }
 
@@ -189,8 +167,8 @@ function generatePDF(data) {
 // =========================
 function getRadioValue(name) {
   const radios = document.getElementsByName(name);
-  for (let radio of radios) {
-    if (radio.checked) return radio.value;
+  for (let r of radios) {
+    if (r.checked) return r.value;
   }
   return "";
 }
@@ -198,7 +176,9 @@ function getRadioValue(name) {
 function showError(msg) {
   document.getElementById("error").innerText = msg;
 }
-  function handleNationalityOther() {
+
+// Handle "Other" input toggle
+function handleNationalityOther() {
   const otherRadio = document.getElementById("nationality-other");
   const otherInput = document.getElementById("nationality-other-input");
 
