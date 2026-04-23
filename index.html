@@ -11,8 +11,7 @@
 <script>
 const { jsPDF } = window.jspdf;
 
-// ✅ Google Apps Script URL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
+
 
 // =========================
 // 🚀 MAIN SUBMIT FUNCTION
@@ -25,13 +24,13 @@ function submitForm() {
     sex: document.getElementById("sex").value,
     nationality: getRadioValue("nationality"),
     phone: document.getElementById("phone").value.trim(),
-    email: document.getElementById("email").value.trim(),
+    email: document.getElementById("email")?.value.trim() || "",
     school: document.getElementById("school").value.trim(),
     graduation: document.getElementById("graduation").value,
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // ✅ Handle "Other nationality"
+  // Handle "Other"
   const otherRadio = document.getElementById("nationality-other");
   if (otherRadio.checked) {
     const otherValue = document.getElementById("nationality-other-input").value.trim();
@@ -42,8 +41,9 @@ function submitForm() {
     data.nationality = otherValue;
   }
 
-  // ✅ Validation
+  // Validation
   for (let key in data) {
+    if (key === "email") continue;
     if (!data[key]) {
       showError("Please fill all fields.");
       return;
@@ -57,24 +57,20 @@ function submitForm() {
 
   showError("");
 
-  // ✅ Save name for thank you page
   localStorage.setItem("username", data.name);
 
-  // ✅ Generate PDF
   generatePDF(data);
-
-  // ✅ Send to Google Sheets
   sendToGoogleSheets(data);
 
-  // ✅ Redirect
   setTimeout(() => {
     window.location.href = "thankyou.html";
   }, 1000);
 }
-
 // =========================
 // 📊 SEND TO GOOGLE SHEETS
 // =========================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
+
 function sendToGoogleSheets(data) {
   fetch(SCRIPT_URL, {
     method: "POST",
@@ -84,14 +80,9 @@ function sendToGoogleSheets(data) {
     }
   })
   .then(res => res.json())
-  .then(res => {
-    console.log("✅ Sent to Sheets:", res);
-  })
-  .catch(err => {
-    console.error("❌ Error:", err);
-  });
+  .then(res => console.log("✅ Sent to Sheets:", res))
+  .catch(err => console.error("❌ Error:", err));
 }
-
 // =========================
 // 📄 PDF GENERATION
 // =========================
@@ -161,7 +152,6 @@ function getRadioValue(name) {
   }
   return "";
 }
-
 function showError(msg) {
   document.getElementById("error").innerText = msg;
 }
