@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>学生情報フォーム | Student Registration</title>
-  <!-- Google Fonts & PDF Library -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学生情報登録フォーム | Student Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * {
@@ -15,608 +14,512 @@
     }
 
     body {
-      background: linear-gradient(145deg, #e9eff7 0%, #dbe4ed 100%);
-      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-      padding: 32px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 20px;
       min-height: 100vh;
     }
 
-    .form-container {
-      max-width: 800px;
+    .container {
+      max-width: 750px;
       margin: 0 auto;
-      background-color: #ffffff;
-      border-radius: 32px;
-      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0,0,0,0.05);
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       overflow: hidden;
-      transition: all 0.2s ease;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .header {
-      background: #0a2b3e;
-      padding: 28px 30px 20px;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       color: white;
+      padding: 30px;
+      text-align: center;
     }
 
-    .header h2 {
-      font-weight: 700;
-      font-size: 1.9rem;
-      letter-spacing: -0.3px;
-      margin-bottom: 6px;
+    .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
     }
 
     .header p {
-      opacity: 0.8;
+      opacity: 0.9;
       font-size: 0.9rem;
-      font-weight: 500;
     }
 
     form {
-      padding: 28px 32px 36px;
+      padding: 30px;
     }
 
-    .field-group {
+    .form-group {
       margin-bottom: 22px;
     }
 
-    label.field-label {
-      font-weight: 700;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #1e2f3e;
+    label {
+      display: block;
+      font-weight: 600;
       margin-bottom: 8px;
-      letter-spacing: -0.2px;
+      color: #2d3748;
+      font-size: 0.85rem;
     }
 
-    .required-star {
-      color: #d9534f;
-      font-size: 1.1rem;
+    .required {
+      color: #e53e3e;
       margin-left: 4px;
     }
 
-    input, select, .other-input-box {
+    input, select {
       width: 100%;
-      padding: 12px 14px;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
       font-size: 0.95rem;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 16px;
-      background: #ffffff;
-      transition: 0.2s;
+      transition: all 0.3s;
       font-family: inherit;
-      outline: none;
     }
 
     input:focus, select:focus {
-      border-color: #2c6e9e;
-      box-shadow: 0 0 0 3px rgba(44,110,158,0.2);
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
 
-    .radio-group-card {
-      background: #f9fbfd;
-      border-radius: 20px;
-      padding: 12px 16px;
-      border: 1px solid #eef2f8;
+    .radio-group {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 12px;
     }
 
     .radio-option {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 6px;
-      border-bottom: 1px solid #edf2f7;
+      padding: 10px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .radio-option:last-child {
-      border-bottom: none;
+    .radio-option:hover {
+      background: #edf2f7;
     }
 
     .radio-option input[type="radio"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #1f5e8c;
-      margin: 0;
-      flex-shrink: 0;
+      width: auto;
+      margin-right: 12px;
+      cursor: pointer;
     }
 
     .radio-option label {
-      font-weight: 500;
-      font-size: 0.9rem;
+      margin: 0;
       cursor: pointer;
+      font-weight: normal;
+    }
+
+    .other-input {
+      margin-left: 12px;
       flex: 1;
-      color: #1a2c3c;
     }
 
-    .other-input-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-left: 28px;
-    }
-
-    .other-input-box {
-      width: auto;
-      flex: 1;
-      min-width: 160px;
-      margin-top: 0;
-      background: white;
-    }
-
-    .inline-hint {
-      font-size: 0.75rem;
-      color: #6c7a8a;
-      margin-top: 6px;
-      margin-left: 4px;
-    }
-
-    button.submit-btn {
-      background: #0f3b2c;
-      background: linear-gradient(95deg, #0f3b2c 0%, #1b5e46 100%);
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      padding: 14px 20px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      border-radius: 40px;
-      width: 100%;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 28px;
-      transition: 0.2s;
-      box-shadow: 0 6px 14px rgba(0,32,16,0.25);
-      letter-spacing: 0.3px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
     }
 
-    button.submit-btn:hover {
-      background: linear-gradient(95deg, #1a543c, #0f3b2c);
-      transform: scale(0.98);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102,126,234,0.4);
     }
 
-    .error-message {
-      background: #fff0f0;
-      color: #c0392b;
-      border-radius: 40px;
-      padding: 10px 18px;
-      font-size: 0.8rem;
-      margin-top: 16px;
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 0.85rem;
       text-align: center;
-      font-weight: 500;
-      border-left: 4px solid #e74c3c;
+      display: none;
     }
 
-    .field-note {
-      font-size: 0.7rem;
-      color: #6c86a3;
-      margin-top: 5px;
+    .success {
+      background: #c6f6d5;
+      color: #22543d;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
     }
 
     @media (max-width: 600px) {
-      .form-container {
-        border-radius: 24px;
-      }
-      form {
-        padding: 20px;
-      }
-      .header h2 {
-        font-size: 1.5rem;
-      }
+      form { padding: 20px; }
+      .header h1 { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
-<div class="form-container">
+<div class="container">
   <div class="header">
-    <h2>📋 学生情報登録</h2>
-    <p>Student Information & Resume Generator</p>
+    <h1>📝 学生情報登録フォーム</h1>
+    <p>Student Information Registration Form</p>
   </div>
-  <form id="studentForm" onsubmit="return false;">
-    <!-- FULL NAME -->
-    <div class="field-group">
-      <label class="field-label">氏名 / Full Name <span class="required-star">*</span></label>
-      <input type="text" id="name" placeholder="例: Magar Ram / マガル ラム" autocomplete="off">
+  
+  <form id="studentForm">
+    <div class="form-group">
+      <label>氏名 / Full Name <span class="required">*</span></label>
+      <input type="text" id="name" placeholder="例: Suzuki Ichiro / 鈴木 一郎">
     </div>
 
-    <!-- KATAKANA -->
-    <div class="field-group">
-      <label class="field-label">カタカナ / Katakana <span class="required-star">*</span></label>
-      <input type="text" id="katakana" placeholder="例: マガル　ラム">
+    <div class="form-group">
+      <label>カタカナ / Katakana <span class="required">*</span></label>
+      <input type="text" id="katakana" placeholder="例: スズキ イチロウ">
     </div>
 
-    <!-- SEX -->
-    <div class="field-group">
-      <label class="field-label">性別 / Sex <span class="required-star">*</span></label>
+    <div class="form-group">
+      <label>性別 / Sex <span class="required">*</span></label>
       <select id="sex">
-        <option value="">選択してください / Select</option>
-        <option value="男性 / Male">男性 / Male</option>
-        <option value="女性 / Female">女性 / Female</option>
-        <option value="その他 / Other">その他 / Other</option>
+        <option value="">選択してください</option>
+        <option value="Male">男性 / Male</option>
+        <option value="Female">女性 / Female</option>
       </select>
     </div>
 
-    <!-- NATIONALITY with "other" dynamic -->
-    <div class="field-group">
-      <label class="field-label">国籍（地域） / Nationality <span class="required-star">*</span></label>
-      <div class="radio-group-card" id="nationalityGroup">
+    <div class="form-group">
+      <label>国籍 / Nationality <span class="required">*</span></label>
+      <div class="radio-group" id="nationalityGroup">
         <div class="radio-option">
           <input type="radio" name="nationality" value="Nepal" id="natNepal">
-          <label for="natNepal">🇳🇵 Nepal</label>
+          <label for="natNepal">ネパール / Nepal</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Sri Lanka" id="natSri">
-          <label for="natSri">🇱🇰 Sri Lanka</label>
+          <label for="natSri">スリランカ / Sri Lanka</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Bangladesh" id="natBang">
-          <label for="natBang">🇧🇩 Bangladesh</label>
+          <label for="natBang">バングラデシュ / Bangladesh</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Vietnam" id="natViet">
-          <label for="natViet">🇻🇳 Vietnam</label>
+          <label for="natViet">ベトナム / Vietnam</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Myanmar" id="natMyan">
-          <label for="natMyan">🇲🇲 Myanmar</label>
+          <label for="natMyan">ミャンマー / Myanmar</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Uzbekistan" id="natUzb">
-          <label for="natUzb">🇺🇿 Uzbekistan</label>
+          <label for="natUzb">ウズベキスタン / Uzbekistan</label>
         </div>
         <div class="radio-option">
           <input type="radio" name="nationality" value="Pakistan" id="natPak">
-          <label for="natPak">🇵🇰 Pakistan</label>
+          <label for="natPak">パキスタン / Pakistan</label>
         </div>
-        <div class="radio-option" id="otherOptionContainer">
-          <input type="radio" name="nationality" value="other_custom" id="natOther">
-          <label for="natOther">🌏 その他 / Others :</label>
-          <input type="text" id="nationalityOtherInput" class="other-input-box" placeholder="例: India, Philippines ..." disabled>
+        <div class="radio-option">
+          <input type="radio" name="nationality" value="" id="natOther">
+          <label for="natOther">その他 / Other:</label>
+          <input type="text" id="otherNationality" class="other-input" placeholder="国名を入力" disabled>
         </div>
       </div>
-      <div class="inline-hint">※ 選択後、その他の場合は記入してください。</div>
     </div>
 
-    <!-- PHONE -->
-    <div class="field-group">
-      <label class="field-label">電話番号 / Phone <span class="required-star">*</span></label>
-      <input type="text" id="phone" placeholder="例: 090-1234-5678">
+    <div class="form-group">
+      <label>電話番号 / Phone <span class="required">*</span></label>
+      <input type="tel" id="phone" placeholder="例: 090-1234-5678">
     </div>
 
-    <!-- EMAIL -->
-    <div class="field-group">
-      <label class="field-label">Email アドレス <span class="required-star">*</span></label>
-      <input type="email" id="email" placeholder="student@example.com">
+    <div class="form-group">
+      <label>Email <span class="required">*</span></label>
+      <input type="email" id="email" placeholder="example@email.com">
     </div>
 
-    <!-- SCHOOL with datalist -->
-    <div class="field-group">
-      <label class="field-label">日本の在籍学校 / Current School <span class="required-star">*</span></label>
-      <input list="schoolsList" type="text" id="school" placeholder="学校名を入力または選択">
-      <datalist id="schoolsList">
-        <option>Human Academy Japanese Language School Osaka Campus (ヒューマンアカデミー日本語学校大阪校)</option>
-        <option>ISI Language School Osaka (ISIランゲージスクール大阪校)</option>
-        <option>Kyoto Institute of Language and Culture (京都言語文化学院)</option>
-        <option>ISI Language School Kyoto (ISIランゲージスクール京都校)</option>
-        <option>Kyoto Computer Gakuin Kamogawa Campus Kyoto Japanese Training Center</option>
-        <option>Ashiya International Academy Osaka Campus (芦屋国際学院 大阪校)</option>
-        <option>Kyoto Asuka Academia (京都あすかアカデミア)</option>
-        <option>Osaka Christian Junior College Japanese Course (大阪キリスト教短期大学 日本語別科)</option>
+    <div class="form-group">
+      <label>在籍学校 / Current School <span class="required">*</span></label>
+      <input list="schools" id="school" placeholder="学校名を入力">
+      <datalist id="schools">
+        <option>Human Academy Japanese Language School Osaka Campus</option>
+        <option>ISI Language School Osaka</option>
+        <option>Kyoto Institute of Language and Culture</option>
+        <option>Osaka Christian Junior College Japanese Course</option>
       </datalist>
     </div>
 
-    <!-- GRADUATION -->
-    <div class="field-group">
-      <label class="field-label">卒業予定年月 / Expected Graduation <span class="required-star">*</span></label>
+    <div class="form-group">
+      <label>卒業予定 / Expected Graduation <span class="required">*</span></label>
       <select id="graduation">
         <option value="">選択してください</option>
-        <option value="2026/9">2026年9月 / September, 2026</option>
-        <option value="2027/3">2027年3月 / March, 2027</option>
-        <option value="2027/9">2027年9月 / September, 2027</option>
-        <option value="2028/3">2028年3月 / March, 2028</option>
+        <option value="2026/9">2026年9月 / September 2026</option>
+        <option value="2027/3">2027年3月 / March 2027</option>
+        <option value="2027/9">2027年9月 / September 2027</option>
+        <option value="2028/3">2028年3月 / March 2028</option>
       </select>
     </div>
 
-    <!-- JAPANESE LEVEL -->
-    <div class="field-group">
-      <label class="field-label">現在の日本語レベル / Japanese Proficiency <span class="required-star">*</span></label>
-      <div class="radio-group-card">
-        <div class="radio-option"><input type="radio" name="japaneseLevel" value="JLPT N1 相当 / Equivalent to N1"><label>日本語能力試験（JLPT）N1相当</label></div>
-        <div class="radio-option"><input type="radio" name="japaneseLevel" value="JLPT N2 相当 / Equivalent to N2"><label>日本語能力試験（JLPT）N2相当</label></div>
-        <div class="radio-option"><input type="radio" name="japaneseLevel" value="JLPT N3 相当 / Equivalent to N3"><label>日本語能力試験（JLPT）N3相当</label></div>
-        <div class="radio-option"><input type="radio" name="japaneseLevel" value="JLPT N4 相当 / Equivalent to N4"><label>日本語能力試験（JLPT）N4相当</label></div>
-        <div class="radio-option"><input type="radio" name="japaneseLevel" value="JLPT N5 相当 / Equivalent to N5"><label>日本語能力試験（JLPT）N5相当</label></div>
+    <div class="form-group">
+      <label>日本語レベル / Japanese Level <span class="required">*</span></label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" name="jpLevel" value="JLPT N1">
+          <label>JLPT N1 相当</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="jpLevel" value="JLPT N2">
+          <label>JLPT N2 相当</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="jpLevel" value="JLPT N3">
+          <label>JLPT N3 相当</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="jpLevel" value="JLPT N4">
+          <label>JLPT N4 相当</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="jpLevel" value="JLPT N5">
+          <label>JLPT N5 相当</label>
+        </div>
       </div>
     </div>
 
-    <div id="globalError" class="error-message" style="display: none;"></div>
-    <button type="button" class="submit-btn" id="submitBtn">✅ 送信 & PDF作成 / Submit & Download PDF</button>
+    <div id="errorMsg" class="error"></div>
+    <div id="successMsg" class="success"></div>
+    
+    <button type="button" id="submitBtn">✅ 送信してPDFをダウンロード</button>
   </form>
 </div>
 
 <script>
-  // ---------- GOOGLE APPS SCRIPT URL (FIXED WORKING ENDPOINT) ----------
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
+// 🔴 IMPORTANT: REPLACE THIS WITH YOUR NEW DEPLOYED URL
+const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_NEW_SCRIPT_ID/exec";
 
-  // DOM elements
-  const nameInput = document.getElementById('name');
-  const katakanaInput = document.getElementById('katakana');
-  const sexSelect = document.getElementById('sex');
-  const phoneInput = document.getElementById('phone');
-  const emailInput = document.getElementById('email');
-  const schoolInput = document.getElementById('school');
-  const graduationSelect = document.getElementById('graduation');
-  const nationalityRadio = document.getElementsByName('nationality');
-  const japaneseLevelRadio = document.getElementsByName('japaneseLevel');
-  const otherRadio = document.getElementById('natOther');
-  const otherText = document.getElementById('nationalityOtherInput');
-  const errorDiv = document.getElementById('globalError');
+// Nationality handling
+const otherRadio = document.getElementById('natOther');
+const otherInput = document.getElementById('otherNationality');
 
-  // Helper: get selected nationality value (handling "other")
-  function getSelectedNationality() {
-    let selectedValue = "";
-    for (let radio of nationalityRadio) {
-      if (radio.checked) {
-        if (radio.value === "other_custom") {
-          const custom = otherText.value.trim();
-          return custom === "" ? "" : custom;
-        } else {
-          selectedValue = radio.value;
-        }
-        break;
-      }
-    }
-    return selectedValue;
+function handleOtherNationality() {
+  if (otherRadio.checked) {
+    otherInput.disabled = false;
+    otherInput.required = true;
+  } else {
+    otherInput.disabled = true;
+    otherInput.required = false;
+    otherInput.value = '';
   }
+}
 
-  // Helper: get japanese level
-  function getJapaneseLevel() {
-    for (let radio of japaneseLevelRadio) {
-      if (radio.checked) return radio.value;
-    }
-    return "";
+otherRadio.addEventListener('change', handleOtherNationality);
+document.querySelectorAll('input[name="nationality"]').forEach(radio => {
+  radio.addEventListener('change', handleOtherNationality);
+});
+
+function getNationality() {
+  const selected = document.querySelector('input[name="nationality"]:checked');
+  if (!selected) return '';
+  if (selected.value === '' && otherInput.value) {
+    return otherInput.value;
   }
+  return selected.value;
+}
 
-  // Helper: show/hide error
-  function showError(msg) {
-    if (msg) {
-      errorDiv.style.display = 'block';
-      errorDiv.innerText = msg;
-    } else {
-      errorDiv.style.display = 'none';
-      errorDiv.innerText = '';
-    }
-  }
+function getJapaneseLevel() {
+  const selected = document.querySelector('input[name="jpLevel"]:checked');
+  return selected ? selected.value : '';
+}
 
-  // Enable/disable other text box based on radio
-  function toggleOtherInput() {
-    if (otherRadio && otherRadio.checked) {
-      otherText.disabled = false;
-      otherText.required = true;
-      otherText.focus();
-    } else {
-      otherText.disabled = true;
-      otherText.value = "";
-      otherText.required = false;
-    }
-  }
+function showError(msg) {
+  const errorDiv = document.getElementById('errorMsg');
+  errorDiv.textContent = msg;
+  errorDiv.style.display = 'block';
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 4000);
+}
 
-  // attach event listeners to nationality radios
-  function bindNationalityEvents() {
-    for (let radio of nationalityRadio) {
-      radio.addEventListener('change', function() {
-        toggleOtherInput();
-      });
-    }
-    if (otherText) otherText.addEventListener('input', function() {});
-  }
+function showSuccess(msg) {
+  const successDiv = document.getElementById('successMsg');
+  successDiv.textContent = msg;
+  successDiv.style.display = 'block';
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 3000);
+}
 
-  // core validation
-  function validateForm() {
-    const name = nameInput.value.trim();
-    const katakana = katakanaInput.value.trim();
-    const sex = sexSelect.value;
-    const nationality = getSelectedNationality();
-    const phone = phoneInput.value.trim();
-    const email = emailInput.value.trim();
-    const school = schoolInput.value.trim();
-    const graduation = graduationSelect.value;
-    const jpLevel = getJapaneseLevel();
+function validateForm() {
+  const name = document.getElementById('name').value.trim();
+  const katakana = document.getElementById('katakana').value.trim();
+  const sex = document.getElementById('sex').value;
+  const nationality = getNationality();
+  const phone = document.getElementById('phone').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const school = document.getElementById('school').value.trim();
+  const graduation = document.getElementById('graduation').value;
+  const jpLevel = getJapaneseLevel();
 
-    if (!name) { showError("氏名 / Full Name を入力してください。"); return false; }
-    if (!katakana) { showError("カタカナ / Katakana を入力してください。"); return false; }
-    if (!sex) { showError("性別 / Sex を選択してください。"); return false; }
-    if (!nationality) { showError("国籍 / Nationality を選択または記入してください。"); return false; }
-    if (!phone) { showError("電話番号 / Phone を入力してください。"); return false; }
-    // Basic phone validation: numbers, hyphens, plus optional
-    const phoneRegex = /^[\+\d\s\-\(\)]{8,20}$/;
-    if (!phoneRegex.test(phone)) {
-      showError("電話番号は有効な形式で入力してください (例: 090-1234-5678)");
-      return false;
-    }
-    if (!email) { showError("Email アドレスを入力してください。"); return false; }
-    const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
-    if (!emailRegex.test(email)) {
-      showError("有効なメールアドレスを入力してください。");
-      return false;
-    }
-    if (!school) { showError("在籍学校 / Current School を入力してください。"); return false; }
-    if (!graduation) { showError("卒業予定年月を選択してください。"); return false; }
-    if (!jpLevel) { showError("日本語レベルを選択してください。"); return false; }
-    showError("");
-    return true;
-  }
+  if (!name) { showError('氏名を入力してください'); return false; }
+  if (!katakana) { showError('カタカナを入力してください'); return false; }
+  if (!sex) { showError('性別を選択してください'); return false; }
+  if (!nationality) { showError('国籍を選択または入力してください'); return false; }
+  if (!phone) { showError('電話番号を入力してください'); return false; }
+  if (!email) { showError('メールアドレスを入力してください'); return false; }
+  if (!email.includes('@') || !email.includes('.')) { showError('有効なメールアドレスを入力してください'); return false; }
+  if (!school) { showError('学校名を入力してください'); return false; }
+  if (!graduation) { showError('卒業予定を選択してください'); return false; }
+  if (!jpLevel) { showError('日本語レベルを選択してください'); return false; }
 
-  // ---------- GOOGLE SHEETS SUBMISSION (RELIABLE POST via fetch + no-cors mode fallback but we use standard POST) ----------
-  // Since the Apps Script is deployed as web app with "Execute as me" and access "Anyone", we use fetch with proper POST.
-  // We also append a timestamp to avoid caching.
-  async function sendToGoogleSheets(dataObj) {
-    try {
-      const payload = new URLSearchParams();
-      for (let [key, val] of Object.entries(dataObj)) {
-        payload.append(key, val);
-      }
-      // Add timestamp for debugging
-      payload.append("timestamp", new Date().toISOString());
+  return true;
+}
 
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",       // no-cors ensures request goes through but we can't read response (still accepted by Apps Script)
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: payload.toString()
-      });
-      // Because mode: 'no-cors', response is opaque but request is delivered.
-      console.log("✅ Request sent to Google Sheets (no-cors mode, script logs should record)");
-      return true;
-    } catch (err) {
-      console.warn("Sheet submission warning:", err);
-      // Still allow PDF generation, but log
-      return false;
-    }
-  }
-
-  // Generate styled PDF with Japanese font embed (using embedded base64 font from font.js – but we provide fallback with standard)
-  // We'll include dynamic content + design matching the original but more robust.
-  function generatePDF(data) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-    // Try to load custom Japanese font (if the external font.js provides notoSansJPBase64)
-    // Since original had font.js but it might not be loaded, we gracefully fallback to standard helvetica.
-    // For better Japanese support we use standard, but text will still render.
-    try {
-      if (typeof notoSansJPBase64 !== 'undefined' && notoSansJPBase64) {
-        doc.addFileToVFS("NotoSansJP-Regular.ttf", notoSansJPBase64);
-        doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-        doc.setFont("NotoSansJP", "normal");
-      } else {
-        // Use built-in (Helvetica works but missing some Kanji? but in PDF it's fine)
-        doc.setFont("helvetica", "normal");
-      }
-    } catch(e) { doc.setFont("helvetica", "normal"); }
-
-    // Header design
-    doc.setFillColor(25, 60, 90);
-    doc.rect(0, 0, 210, 28, "F");
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text("📄 学生情報確認票", 105, 18, { align: "center" });
-    doc.setTextColor(40, 40, 50);
-    
-    let yPos = 40;
-    const leftLabelX = 18;
-    const valueX = 70;
-    const lineWidth = 170;
-
-    function addDetail(label, value) {
-      if (!value) value = "—";
-      doc.setFontSize(11);
-      doc.setTextColor(30, 80, 110);
-      doc.setFont("helvetica", "bold");
-      doc.text(label, leftLabelX, yPos);
+function generatePDF(data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Header
+  doc.setFillColor(30, 60, 120);
+  doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.text('Student Registration Information', 105, 20, { align: 'center' });
+  
+  doc.setTextColor(0, 0, 0);
+  let y = 45;
+  
+  const fields = [
+    { label: '氏名 / Full Name:', value: data.name },
+    { label: 'カタカナ / Katakana:', value: data.katakana },
+    { label: '性別 / Sex:', value: data.sex },
+    { label: '国籍 / Nationality:', value: data.nationality },
+    { label: '電話番号 / Phone:', value: data.phone },
+    { label: 'Email:', value: data.email },
+    { label: '学校 / School:', value: data.school },
+    { label: '卒業予定 / Graduation:', value: data.graduation },
+    { label: '日本語レベル / Japanese Level:', value: data.japaneseLevel }
+  ];
+  
+  doc.setFontSize(11);
+  fields.forEach(field => {
+    if (field.value) {
+      doc.setTextColor(80, 80, 120);
+      doc.text(field.label, 20, y);
       doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "normal");
-      const splitText = doc.splitTextToSize(value, 100);
-      doc.text(splitText, valueX, yPos);
-      doc.setDrawColor(200, 210, 220);
-      doc.line(leftLabelX, yPos + 4, leftLabelX + lineWidth, yPos + 4);
-      yPos += 10;
-      if (splitText.length > 1) yPos += (splitText.length - 1) * 5;
+      doc.text(field.value, 70, y);
+      y += 10;
+      doc.setDrawColor(220, 220, 220);
+      doc.line(20, y - 3, 190, y - 3);
     }
-
-    addDetail("氏名 / Full Name", data.name);
-    addDetail("カタカナ / Katakana", data.katakana);
-    addDetail("性別 / Sex", data.sex);
-    addDetail("国籍 / Nationality", data.nationality);
-    addDetail("電話番号 / Phone", data.phone);
-    addDetail("Email", data.email);
-    addDetail("在籍学校 / School", data.school);
-    addDetail("卒業予定 / Graduation", data.graduation);
-    addDetail("日本語レベル / JLPT Level", data.japaneseLevel);
-
-    // Footer
-    const todayDate = new Date().toLocaleDateString('ja-JP');
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text(`発行日: ${todayDate} | Student Resume Generator`, 105, 275, { align: "center" });
-    doc.setFontSize(8);
-    doc.text("This document is automatically generated from student registration form.", 105, 285, { align: "center" });
-    
-    doc.save("student_registration_resume.pdf");
-  }
-
-  // Main submit handler
-  async function submitFormHandler() {
-    if (!validateForm()) return;
-
-    // Collect final data
-    let nationalityFinal = getSelectedNationality();
-    const jpLevel = getJapaneseLevel();
-    
-    const formData = {
-      name: nameInput.value.trim(),
-      katakana: katakanaInput.value.trim(),
-      sex: sexSelect.value,
-      nationality: nationalityFinal,
-      phone: phoneInput.value.trim(),
-      email: emailInput.value.trim(),
-      school: schoolInput.value.trim(),
-      graduation: graduationSelect.value,
-      japaneseLevel: jpLevel,
-      submittedAt: new Date().toISOString()
-    };
-
-    // Store name for thankyou (optional)
-    localStorage.setItem("username", formData.name);
-
-    // Show loading indicator on button
-    const btn = document.getElementById('submitBtn');
-    const originalText = btn.innerText;
-    btn.innerText = "⏳ 送信中 / Sending...";
-    btn.disabled = true;
-
-    try {
-      // 1. Send to Google Sheets
-      await sendToGoogleSheets(formData);
-      // 2. Generate PDF
-      generatePDF(formData);
-      // 3. Short delay for user experience then redirect to thankyou (but if thankyou.html doesn't exist, we show alert)
-      setTimeout(() => {
-        // Attempt to redirect – if thankyou.html is not present, we will show success message and stay.
-        window.location.href = "thankyou.html";
-      }, 700);
-    } catch (err) {
-      console.error(err);
-      showError("送信エラーが発生しましたが、PDFはダウンロードされます。再試行してください。");
-      generatePDF(formData);  // still generate PDF even on sheet error
-      btn.innerText = originalText;
-      btn.disabled = false;
-    } finally {
-      // reset button after redirect delay but redirect will happen anyway. reset anyway for safety
-      setTimeout(() => {
-        if (btn.disabled) {
-          btn.innerText = originalText;
-          btn.disabled = false;
-        }
-      }, 1500);
-    }
-  }
-
-  // Event listeners
-  window.addEventListener('DOMContentLoaded', () => {
-    bindNationalityEvents();
-    toggleOtherInput(); // initial state
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) submitBtn.addEventListener('click', submitFormHandler);
-    
-    // additional: if user clicks other input, ensure radio selected
-    otherText?.addEventListener('focus', () => {
-      if (!otherRadio.checked) {
-        otherRadio.checked = true;
-        toggleOtherInput();
-      }
-    });
   });
+  
+  const date = new Date().toLocaleDateString('ja-JP');
+  doc.setFontSize(9);
+  doc.setTextColor(128, 128, 128);
+  doc.text(`Generated: ${date}`, 150, 280);
+  
+  doc.save('student_registration.pdf');
+}
+
+async function submitToGoogleSheets(data) {
+  // Convert data to URL encoded format
+  const params = new URLSearchParams();
+  params.append('timestamp', new Date().toISOString());
+  params.append('name', data.name);
+  params.append('katakana', data.katakana);
+  params.append('sex', data.sex);
+  params.append('nationality', data.nationality);
+  params.append('phone', data.phone);
+  params.append('email', data.email);
+  params.append('school', data.school);
+  params.append('graduation', data.graduation);
+  params.append('japaneseLevel', data.japaneseLevel);
+  
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Success:', result);
+      return true;
+    } else {
+      console.error('Server responded with error:', response.status);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
+
+document.getElementById('submitBtn').addEventListener('click', async function() {
+  if (!validateForm()) return;
+  
+  const btn = this;
+  const originalText = btn.textContent;
+  btn.textContent = '⏳ 送信中...';
+  btn.disabled = true;
+  
+  const formData = {
+    name: document.getElementById('name').value.trim(),
+    katakana: document.getElementById('katakana').value.trim(),
+    sex: document.getElementById('sex').value,
+    nationality: getNationality(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    school: document.getElementById('school').value.trim(),
+    graduation: document.getElementById('graduation').value,
+    japaneseLevel: getJapaneseLevel()
+  };
+  
+  // Generate PDF first
+  generatePDF(formData);
+  
+  // Send to Google Sheets
+  const success = await submitToGoogleSheets(formData);
+  
+  if (success) {
+    showSuccess('✅ データが送信されました！PDFもダウンロードされています。');
+    setTimeout(() => {
+      // Optional: redirect to thank you page
+      // window.location.href = 'thankyou.html';
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 1500);
+  } else {
+    showError('⚠️ 送信に失敗しましたが、PDFはダウンロードされています。インターネット接続を確認して再試行してください。');
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+});
 </script>
 </body>
 </html>
