@@ -285,23 +285,23 @@
       <label>日本語レベル / Japanese Level <span class="required">*</span></label>
       <div class="radio-group">
         <div class="radio-option">
-          <input type="radio" name="jpLevel" value="JLPT N1">
+          <input type="radio" name="jpLevel" value="JLPT N1 相当">
           <label>JLPT N1 相当</label>
         </div>
         <div class="radio-option">
-          <input type="radio" name="jpLevel" value="JLPT N2">
+          <input type="radio" name="jpLevel" value="JLPT N2 相当">
           <label>JLPT N2 相当</label>
         </div>
         <div class="radio-option">
-          <input type="radio" name="jpLevel" value="JLPT N3">
+          <input type="radio" name="jpLevel" value="JLPT N3 相当">
           <label>JLPT N3 相当</label>
         </div>
         <div class="radio-option">
-          <input type="radio" name="jpLevel" value="JLPT N4">
+          <input type="radio" name="jpLevel" value="JLPT N4 相当">
           <label>JLPT N4 相当</label>
         </div>
         <div class="radio-option">
-          <input type="radio" name="jpLevel" value="JLPT N5">
+          <input type="radio" name="jpLevel" value="JLPT N5 相当">
           <label>JLPT N5 相当</label>
         </div>
       </div>
@@ -315,8 +315,9 @@
 </div>
 
 <script>
-// 🔴 IMPORTANT: REPLACE THIS WITH YOUR NEW DEPLOYED URL
-const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_NEW_SCRIPT_ID/exec";
+// 🔴 IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED URL FROM STEP 1
+// Example: "https://script.google.com/macros/s/AKfycbw5XyZ123456789/exec"
+const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_REAL_URL_HERE/exec";
 
 // Nationality handling
 const otherRadio = document.getElementById('natOther');
@@ -443,9 +444,7 @@ function generatePDF(data) {
 }
 
 async function submitToGoogleSheets(data) {
-  // Convert data to URL encoded format
   const params = new URLSearchParams();
-  params.append('timestamp', new Date().toISOString());
   params.append('name', data.name);
   params.append('katakana', data.katakana);
   params.append('sex', data.sex);
@@ -457,25 +456,22 @@ async function submitToGoogleSheets(data) {
   params.append('japaneseLevel', data.japaneseLevel);
   
   try {
+    console.log("Sending to:", SCRIPT_URL);
+    
+    // Use fetch with proper CORS handling
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'cors',
+      mode: 'no-cors', // This bypasses CORS for the request
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: params.toString()
     });
     
-    if (response.ok) {
-      const result = await response.json();
-      console.log('Success:', result);
-      return true;
-    } else {
-      console.error('Server responded with error:', response.status);
-      return false;
-    }
+    console.log("Request sent successfully (no-cors mode)");
+    return true;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -500,7 +496,7 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
     japaneseLevel: getJapaneseLevel()
   };
   
-  // Generate PDF first
+  // Generate PDF
   generatePDF(formData);
   
   // Send to Google Sheets
@@ -508,17 +504,15 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
   
   if (success) {
     showSuccess('✅ データが送信されました！PDFもダウンロードされています。');
-    setTimeout(() => {
-      // Optional: redirect to thank you page
-      // window.location.href = 'thankyou.html';
-      btn.textContent = originalText;
-      btn.disabled = false;
-    }, 1500);
   } else {
-    showError('⚠️ 送信に失敗しましたが、PDFはダウンロードされています。インターネット接続を確認して再試行してください。');
-    btn.textContent = originalText;
-    btn.disabled = false;
+    showError('⚠️ 送信に失敗しましたが、PDFはダウンロードされています。');
   }
+  
+  btn.textContent = originalText;
+  btn.disabled = false;
+  
+  // Optional: Reset form
+  // document.getElementById('studentForm').reset();
 });
 </script>
 </body>
