@@ -49,14 +49,24 @@
     }
     button:hover { background: #45a049; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error, .success {
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 15px;
-      display: none;
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
     }
-    .error { background: #ffebee; color: #c62828; }
-    .success { background: #e8f5e9; color: #2e7d32; }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .notification.success { background: #4CAF50; }
+    .notification.error { background: #f44336; }
+    .notification.info { background: #2196F3; }
   </style>
 </head>
 <body>
@@ -66,12 +76,12 @@
   <form id="studentForm">
     <div class="form-group">
       <label>氏名 / Full Name <span class="required">*</span></label>
-      <input type="text" id="name" placeholder="例: Suzuki Ichiro">
+      <input type="text" id="name" placeholder="例: Milan Rai">
     </div>
 
     <div class="form-group">
       <label>カタカナ / Katakana <span class="required">*</span></label>
-      <input type="text" id="katakana" placeholder="例: スズキ イチロウ">
+      <input type="text" id="katakana" placeholder="例: ミラン ライ">
     </div>
 
     <div class="form-group">
@@ -86,14 +96,14 @@
     <div class="form-group">
       <label>国籍 / Nationality <span class="required">*</span></label>
       <div class="radio-group">
-        <div class="radio-option"><input type="radio" name="nationality" value="Nepal"> <label>Nepal</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Sri Lanka"> <label>Sri Lanka</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Bangladesh"> <label>Bangladesh</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Vietnam"> <label>Vietnam</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Myanmar"> <label>Myanmar</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Uzbekistan"> <label>Uzbekistan</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="Pakistan"> <label>Pakistan</label></div>
-        <div class="radio-option"><input type="radio" name="nationality" value="" id="natOther"> <label>Other:</label> <input type="text" id="otherNationality" class="other-input" placeholder="Enter country" disabled></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Nepal"> <label>🇳🇵 Nepal</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Sri Lanka"> <label>🇱🇰 Sri Lanka</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Bangladesh"> <label>🇧🇩 Bangladesh</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Vietnam"> <label>🇻🇳 Vietnam</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Myanmar"> <label>🇲🇲 Myanmar</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Uzbekistan"> <label>🇺🇿 Uzbekistan</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="Pakistan"> <label>🇵🇰 Pakistan</label></div>
+        <div class="radio-option"><input type="radio" name="nationality" value="" id="natOther"> <label>🌏 Other:</label> <input type="text" id="otherNationality" class="other-input" placeholder="Enter country" disabled></div>
       </div>
     </div>
 
@@ -104,38 +114,42 @@
 
     <div class="form-group">
       <label>Email <span class="required">*</span></label>
-      <input type="email" id="email" placeholder="example@email.com">
+      <input type="email" id="email" placeholder="milan@example.com">
     </div>
 
     <div class="form-group">
       <label>在籍学校 / Current School <span class="required">*</span></label>
-      <input type="text" id="school" placeholder="学校名を入力">
+      <input list="schools" id="school" placeholder="学校名を入力">
+      <datalist id="schools">
+        <option>Human Academy Japanese Language School Osaka Campus</option>
+        <option>ISI Language School Osaka</option>
+        <option>Kyoto Institute of Language and Culture</option>
+        <option>Ashiya International Academy Osaka Campus</option>
+      </datalist>
     </div>
 
     <div class="form-group">
       <label>卒業予定 / Expected Graduation <span class="required">*</span></label>
       <select id="graduation">
         <option value="">選択してください</option>
-        <option value="2026/9">2026年9月</option>
-        <option value="2027/3">2027年3月</option>
-        <option value="2027/9">2027年9月</option>
-        <option value="2028/3">2028年3月</option>
+        <option value="2026/9">2026年9月 / September 2026</option>
+        <option value="2027/3">2027年3月 / March 2027</option>
+        <option value="2027/9">2027年9月 / September 2027</option>
+        <option value="2028/3">2028年3月 / March 2028</option>
       </select>
     </div>
 
     <div class="form-group">
       <label>日本語レベル / Japanese Level <span class="required">*</span></label>
       <div class="radio-group">
-        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N1"> <label>JLPT N1</label></div>
-        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N2"> <label>JLPT N2</label></div>
-        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N3"> <label>JLPT N3</label></div>
-        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N4"> <label>JLPT N4</label></div>
-        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N5"> <label>JLPT N5</label></div>
+        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N1"> <label>JLPT N1 相当</label></div>
+        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N2"> <label>JLPT N2 相当</label></div>
+        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N3"> <label>JLPT N3 相当</label></div>
+        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N4"> <label>JLPT N4 相当</label></div>
+        <div class="radio-option"><input type="radio" name="jpLevel" value="JLPT N5"> <label>JLPT N5 相当</label></div>
       </div>
     </div>
 
-    <div id="errorMsg" class="error"></div>
-    <div id="successMsg" class="success"></div>
     <button type="button" id="submitBtn">✅ 送信してPDFをダウンロード</button>
   </form>
 </div>
@@ -144,45 +158,34 @@
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 3000);
+}
+
 // Handle other nationality
 const otherRadio = document.getElementById('natOther');
 const otherInput = document.getElementById('otherNationality');
 
 function handleOther() {
-  if (otherRadio.checked) {
-    otherInput.disabled = false;
-  } else {
-    otherInput.disabled = true;
-    otherInput.value = '';
-  }
+  otherInput.disabled = !otherRadio.checked;
+  if (!otherRadio.checked) otherInput.value = '';
 }
-if (otherRadio) otherRadio.addEventListener('change', handleOther);
+otherRadio?.addEventListener('change', handleOther);
 document.querySelectorAll('input[name="nationality"]').forEach(r => r.addEventListener('change', handleOther));
 
 function getNationality() {
   const selected = document.querySelector('input[name="nationality"]:checked');
   if (!selected) return '';
-  if (selected.value === '' && otherInput.value) return otherInput.value;
-  return selected.value;
+  return selected.value === '' ? otherInput.value : selected.value;
 }
 
 function getJapaneseLevel() {
   const selected = document.querySelector('input[name="jpLevel"]:checked');
   return selected ? selected.value : '';
-}
-
-function showError(msg) {
-  const div = document.getElementById('errorMsg');
-  div.textContent = msg;
-  div.style.display = 'block';
-  setTimeout(() => div.style.display = 'none', 4000);
-}
-
-function showSuccess(msg) {
-  const div = document.getElementById('successMsg');
-  div.textContent = msg;
-  div.style.display = 'block';
-  setTimeout(() => div.style.display = 'none', 3000);
 }
 
 function validate() {
@@ -195,17 +198,18 @@ function validate() {
   const school = document.getElementById('school').value.trim();
   const graduation = document.getElementById('graduation').value;
   const jpLevel = getJapaneseLevel();
-
-  if (!name) { showError('氏名を入力してください'); return false; }
-  if (!katakana) { showError('カタカナを入力してください'); return false; }
-  if (!sex) { showError('性別を選択してください'); return false; }
-  if (!nationality) { showError('国籍を選択してください'); return false; }
-  if (!phone) { showError('電話番号を入力してください'); return false; }
-  if (!email || !email.includes('@')) { showError('有効なメールアドレスを入力してください'); return false; }
-  if (!school) { showError('学校名を入力してください'); return false; }
-  if (!graduation) { showError('卒業予定を選択してください'); return false; }
-  if (!jpLevel) { showError('日本語レベルを選択してください'); return false; }
-  return true;
+  
+  if (!name) { showNotification('氏名を入力してください', 'error'); return false; }
+  if (!katakana) { showNotification('カタカナを入力してください', 'error'); return false; }
+  if (!sex) { showNotification('性別を選択してください', 'error'); return false; }
+  if (!nationality) { showNotification('国籍を選択してください', 'error'); return false; }
+  if (!phone) { showNotification('電話番号を入力してください', 'error'); return false; }
+  if (!email || !email.includes('@')) { showNotification('有効なメールアドレスを入力してください', 'error'); return false; }
+  if (!school) { showNotification('学校名を入力してください', 'error'); return false; }
+  if (!graduation) { showNotification('卒業予定を選択してください', 'error'); return false; }
+  if (!jpLevel) { showNotification('日本語レベルを選択してください', 'error'); return false; }
+  
+  return { name, katakana, sex, nationality, phone, email, school, graduation, japaneseLevel: jpLevel };
 }
 
 function generatePDF(data) {
@@ -222,9 +226,15 @@ function generatePDF(data) {
   let y = 45;
   
   const fields = [
-    ['Name:', data.name], ['Katakana:', data.katakana], ['Sex:', data.sex],
-    ['Nationality:', data.nationality], ['Phone:', data.phone], ['Email:', data.email],
-    ['School:', data.school], ['Graduation:', data.graduation], ['Japanese Level:', data.japaneseLevel]
+    ['Name:', data.name],
+    ['Katakana:', data.katakana],
+    ['Sex:', data.sex],
+    ['Nationality:', data.nationality],
+    ['Phone:', data.phone],
+    ['Email:', data.email],
+    ['School:', data.school],
+    ['Graduation:', data.graduation],
+    ['Japanese Level:', data.japaneseLevel]
   ];
   
   doc.setFontSize(11);
@@ -237,55 +247,76 @@ function generatePDF(data) {
     }
   });
   
-  doc.save('student_registration.pdf');
+  const date = new Date().toLocaleDateString();
+  doc.setFontSize(9);
+  doc.setTextColor(128, 128, 128);
+  doc.text(`Generated: ${date}`, 150, 280);
+  
+  doc.save(`student_${data.name.replace(/\s/g, '_')}.pdf`);
 }
 
 async function sendToSheet(data) {
+  // Create form data with correct field names matching your sheet columns
+  const formData = new URLSearchParams();
+  formData.append('name', data.name);
+  formData.append('katakana', data.katakana);
+  formData.append('sex', data.sex);
+  formData.append('nationality', data.nationality);
+  formData.append('phone', data.phone);
+  formData.append('email', data.email);
+  formData.append('school', data.school);
+  formData.append('graduation', data.graduation);
+  formData.append('japaneseLevel', data.japaneseLevel);
+  
+  console.log("Sending data:", {
+    name: data.name,
+    email: data.email,
+    school: data.school,
+    japaneseLevel: data.japaneseLevel
+  });
+  
   try {
-    const response = await fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(data)
+      body: formData.toString()
     });
-    console.log('Request sent successfully');
+    console.log("✅ Data sent successfully");
     return true;
   } catch(err) {
-    console.error('Error:', err);
+    console.error("Error sending data:", err);
     return false;
   }
 }
 
 document.getElementById('submitBtn').addEventListener('click', async function() {
-  if (!validate()) return;
+  const data = validate();
+  if (!data) return;
   
   const btn = this;
+  const originalText = btn.textContent;
   btn.textContent = '⏳ 送信中...';
   btn.disabled = true;
   
-  const formData = {
-    name: document.getElementById('name').value.trim(),
-    katakana: document.getElementById('katakana').value.trim(),
-    sex: document.getElementById('sex').value,
-    nationality: getNationality(),
-    phone: document.getElementById('phone').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    school: document.getElementById('school').value.trim(),
-    graduation: document.getElementById('graduation').value,
-    japaneseLevel: getJapaneseLevel()
-  };
+  // Generate PDF
+  generatePDF(data);
   
-  generatePDF(formData);
-  await sendToSheet(formData);
+  // Send to Google Sheets
+  await sendToSheet(data);
   
-  showSuccess('✅ データが送信されました！PDFもダウンロードされました。');
+  showNotification('✅ 送信完了！データを保存しました', 'success');
+  
   btn.textContent = '✅ 送信完了';
   setTimeout(() => {
-    btn.textContent = '✅ 送信してPDFをダウンロード';
+    btn.textContent = originalText;
     btn.disabled = false;
   }, 2000);
+  
+  // Optional: Clear form
+  // document.getElementById('studentForm').reset();
 });
 </script>
 </body>
