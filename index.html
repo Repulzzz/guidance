@@ -19,8 +19,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDE
 // 🚀 MAIN SUBMIT FUNCTION
 // =========================
 function submitForm() {
-  console.log("🚀 Submit started...");
-
   const data = {
     name: document.getElementById("name").value.trim(),
     katakana: document.getElementById("katakana").value.trim(),
@@ -44,8 +42,6 @@ function submitForm() {
     data.nationality = otherValue;
   }
 
-  console.log("📋 Form data:", data);
-
   // Validation
   for (let key in data) {
     if (key === "email") continue;
@@ -65,57 +61,54 @@ function submitForm() {
   // Store name for thank you page
   localStorage.setItem("username", data.name);
 
-  // 📊 SEND TO GOOGLE SHEETS
-  console.log("📊 Sending to Google Sheets...");
+  // 📊 SEND TO GOOGLE SHEETS (using form submission method to avoid CORB)
   sendToGoogleSheets(data);
 
   // 📄 GENERATE PDF
-  console.log("📄 Generating PDF...");
   generatePDF(data);
 
   // Redirect to thank you page
   setTimeout(() => {
-    console.log("✅ Redirecting to thank you page...");
     window.location.href = "thankyou.html";
-  }, 1000);
+  }, 800);
 }
 
 // =========================
-// 📊 SEND TO GOOGLE SHEETS
+// 📊 SEND TO GOOGLE SHEETS (CORB-SAFE METHOD)
 // =========================
 function sendToGoogleSheets(data) {
-  console.log("Preparing to send data to:", SCRIPT_URL);
-  
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("katakana", data.katakana);
-  formData.append("sex", data.sex);
-  formData.append("nationality", data.nationality);
-  formData.append("phone", data.phone);
-  formData.append("email", data.email);
-  formData.append("school", data.school);
-  formData.append("graduation", data.graduation);
-  formData.append("japaneseLevel", data.japaneseLevel);
+  // Create a hidden iframe to submit the form (avoids CORB issues)
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
 
-  console.log("FormData prepared, sending fetch request...");
+  // Create a form
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = 'hidden_iframe';
 
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    body: formData,
-    mode: 'no-cors' // Add this to avoid CORS issues
-  })
-  .then(response => {
-    console.log("✅ Response received:", response);
-    return response.text();
-  })
-  .then(result => {
-    console.log("✅ Data sent to Google Sheets successfully:", result);
-    alert("✅ Data saved to spreadsheet!");
-  })
-  .catch(error => {
-    console.error("❌ Error sending to Google Sheets:", error);
-    alert("⚠️ Warning: " + error.message + "\nBut PDF will still download.");
-  });
+  // Add form fields
+  for (let key in data) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = data[key];
+    form.appendChild(input);
+  }
+
+  // Submit form
+  document.body.appendChild(form);
+  form.submit();
+
+  // Clean up
+  setTimeout(() => {
+    document.body.removeChild(form);
+    document.body.removeChild(iframe);
+  }, 1000);
+
+  console.log("✅ Data sent to Google Sheets");
 }
 
 // =========================
@@ -174,7 +167,6 @@ function generatePDF(data) {
   doc.text("Date: " + today, 150, 285);
 
   doc.save("student_resume.pdf");
-  console.log("✅ PDF generated");
 }
 
 // =========================
@@ -382,6 +374,9 @@ button:hover {
 <option>Kyoto Institute of Language and Culture (京都言語文化学院)</option>
 <option>ISI Language School Kyoto (ISIランゲージスクール京都校)</option>
 <option>Kyoto Computer Gakuin Kamogawa Campus Kyoto Japanese Training Center (京都コンピュータ学院鴨川校京都日本語研修センター)</option>
+<option>Ashiya International Academy Osaka Campus (芦屋国際学院 大阪校)</option>
+<option>Kyoto Asuka Academia (京都あすかアカデミア)</option>
+<option>Osaka Christian Junior College Japanese Course (大阪キリスト教短期大学 日本語別科)</option>
 </datalist>
 
 <label class="field-label">卒業予定年月（例：2027/3） / Expected Graduation Date (Example: 2027/3) *</label>
