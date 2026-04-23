@@ -1,17 +1,7 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-<meta charset="UTF-8">
-<title>Student Information Form</title>
-
-<script src="font.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-
 <script>
 const { jsPDF } = window.jspdf;
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 
 // =========================
 // 🚀 MAIN SUBMIT FUNCTION
@@ -24,29 +14,25 @@ function submitForm() {
     sex: document.getElementById("sex").value,
     nationality: getRadioValue("nationality"),
     phone: document.getElementById("phone").value.trim(),
-    email: document.getElementById("email")?.value.trim() || "",
+    email: document.getElementById("email").value.trim(),
     school: document.getElementById("school").value.trim(),
     graduation: document.getElementById("graduation").value,
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // ✅ Handle "Other nationality"
+  // ✅ OTHER nationality fix
   const otherRadio = document.getElementById("nationality-other");
-
   if (otherRadio.checked) {
     const otherValue = document.getElementById("nationality-other-input").value.trim();
-
     if (!otherValue) {
       showError("Please specify nationality.");
       return;
     }
-
     data.nationality = otherValue;
   }
 
-  // ✅ Validation
+  // ✅ validation
   for (let key in data) {
-    if (key === "email") continue;
     if (!data[key]) {
       showError("Please fill all fields.");
       return;
@@ -54,112 +40,53 @@ function submitForm() {
   }
 
   if (!/^[0-9]+$/.test(data.phone)) {
-    showError("Phone must contain only numbers.");
+    showError("Phone must be numbers only.");
     return;
   }
 
   showError("");
 
-  // ✅ Save name for thank you page
+  // ✅ save name
   localStorage.setItem("username", data.name);
 
-  // ✅ Generate PDF
+  // ✅ generate PDF
   generatePDF(data);
 
-  // ✅ Send to Google Sheets
+  // ✅ send to sheets THEN redirect
   sendToGoogleSheets(data);
-
-  // ✅ Redirect
-  setTimeout(() => {
-    window.location.href = "thankyou.html";
-  }, 1000);
 }
 
 // =========================
 // 📊 SEND TO GOOGLE SHEETS
 // =========================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
-
 function sendToGoogleSheets(data) {
+
   fetch(SCRIPT_URL, {
     method: "POST",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    body: JSON.stringify(data),   // IMPORTANT
+    // ❌ NO application/json header
   })
-  .then(res => res.json())
-  .then(res => console.log("✅ Sent to Sheets:", res))
-  .catch(err => console.error("❌ Error:", err));
+  .then(res => res.text())
+  .then(res => {
+    console.log("✅ Sent:", res);
+
+    // ✅ redirect AFTER success
+    window.location.href = "thankyou.html";
+  })
+  .catch(err => {
+    console.error("❌ Error:", err);
+    showError("Failed to send data.");
+  });
 }
 
 // =========================
-// 📄 PDF GENERATION
+// 📄 PDF GENERATION (same)
 // =========================
 function generatePDF(data) {
-
   const doc = new jsPDF();
-
-  // ✅ Load Japanese font
-  try {
-    doc.addFileToVFS("NotoSansJP-Regular.ttf", notoSansJPBase64);
-    doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-    doc.setFont("NotoSansJP", "normal");
-  } catch (e) {
-    console.log("Font failed");
-  }
-
-  // Header
-  doc.setFillColor(30, 60, 120);
-  doc.rect(0, 0, 210, 25, "F");
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
-  doc.text("Thank you for Filling", 105, 15, { align: "center" });
-
-  doc.setTextColor(0, 0, 0);
-
-  let y = 35;
-
-  function addField(label, value) {
-    if (!value) return;
-
-    doc.setFontSize(12);
-    doc.setTextColor(30, 60, 120);
-    doc.text(label, 15, y);
-
-    doc.setTextColor(0);
-    const lines = doc.splitTextToSize(value, 110);
-    doc.text(lines, 80, y);
-
-    doc.setDrawColor(200);
-    doc.line(15, y + 8, 200, y + 8);
-
-    y += lines.length * 6 + 12;
-  }
-
-  // Content
-  addField("Name / 氏名", data.name);
-  addField("Katakana / カタカナ", data.katakana);
-  addField("Sex / 性別", data.sex);
-  addField("Nationality / 国籍", data.nationality);
-  addField("Phone / 電話番号", data.phone);
-  addField("Email / メール", data.email);
-  addField("School / 学校", data.school);
-  addField("Graduation / 卒業予定", data.graduation);
-  addField("Japanese Level / 日本語レベル", data.japaneseLevel);
-
-  // Footer
-  const today = new Date().toLocaleDateString();
-
-  doc.setFontSize(9);
-  doc.setTextColor(120);
-  doc.text("Date: " + today, 150, 285);
-
-  doc.line(10, 280, 200, 280);
-
-  // Save
-  doc.save("student_resume.pdf");
+  doc.text("Student Info", 10, 10);
+  doc.text("Name: " + data.name, 10, 20);
+  doc.save("student.pdf");
 }
 
 // =========================
@@ -176,426 +103,4 @@ function getRadioValue(name) {
 function showError(msg) {
   document.getElementById("error").innerText = msg;
 }
-
-// Handle "Other" input toggle
-function handleNationalityOther() {
-  const otherRadio = document.getElementById("nationality-other");
-  const otherInput = document.getElementById("nationality-other-input");
-
-  if (otherRadio.checked) {
-    otherInput.disabled = false;
-  } else {
-    otherInput.disabled = true;
-    otherInput.value = "";
-  }
-}
-
-function updateOtherValue() {
-  const otherInput = document.getElementById("nationality-other-input");
-  document.getElementById("nationality-other").value = otherInput.value;
-}
 </script>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  padding: 20px;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-h2 {
-  text-align: center;
-}
-
-label {
-  font-weight: bold;
-  margin-top: 10px;
-  display: block;
-}
-
-input[type="text"], select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-.radio-group {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.radio-option {
-  display: block;
-  margin: 8px 0;
-  padding: 8px;
-  background: #f9f9f9;
-  border-radius: 5px;
-}
-
-.radio-option:hover {
-  background: #f0f0f0;
-}
-
-.radio-option input[type="radio"] {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.radio-option label {
-  display: inline;
-  font-weight: normal;
-  cursor: pointer;
-  margin: 0;
-}
-
-.other-input {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  width: 200px;
-}
-
-button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 12px;
-  background: #000;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #333;
-}
-
-.error {
-  color: red;
-  font-size: 12px;
-  margin-top: 10px;
-}
-
-.field-label {
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-<h2>Student Information</h2>
-
-<label class="field-label">氏名 / Full Name *</label>
-<input type="text" id="name" placeholder="例: Magar Ram">
-
-<label class="field-label">カタカナ / Katakana *</label>
-<input type="text" id="katakana" placeholder="例: マガル　ラム">
-
-<label class="field-label">性別 / Sex *</label>
-<select id="sex">
-  <option value="">Select</option>
-  <option>Male</option>
-  <option>Female</option>
-</select>
-
-<label class="field-label">国籍（地域） / Nationality (Region) *</label>
-<div class="radio-group">
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-nepal" value="Nepal" onchange="handleNationalityOther()">
-    <label for="nationality-nepal">Nepal</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-srilanka" value="Sri Lanka" onchange="handleNationalityOther()">
-    <label for="nationality-srilanka">Sri Lanka</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-bangladesh" value="Bangladesh" onchange="handleNationalityOther()">
-    <label for="nationality-bangladesh">Bangladesh</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-vietnam" value="Vietnam" onchange="handleNationalityOther()">
-    <label for="nationality-vietnam">Vietnam</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-myanmar" value="Myanmar" onchange="handleNationalityOther()">
-    <label for="nationality-myanmar">Myanmar</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-uzbekistan" value="Uzbekistan" onchange="handleNationalityOther()">
-    <label for="nationality-uzbekistan">Uzbekistan</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-pakistan" value="Pakistan" onchange="handleNationalityOther()">
-    <label for="nationality-pakistan">Pakistan</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="nationality" id="nationality-other" value="" onchange="handleNationalityOther()">
-    <label for="nationality-other">Others:</label>
-    <input type="text" class="other-input" id="nationality-other-input" placeholder="Please specify" disabled onchange="updateOtherValue()">
-  </div>
-</div>
-
-<label class="field-label">電話番号 / Phone *</label>
-<input type="text" id="phone" placeholder="例: 090-XXXX-XXXX">
-
-<label class="field-label">Email *</label>
-<input type="text" id="email" placeholder="例: xxxx@yyy.com">
-
-<label class="field-label">日本の在籍学校 / Current School *</label>
-<input list="schools" type="text" id="school" placeholder="Type school name">
-<datalist id="schools">
-  <option>Human Academy Japanese Language School Osaka Campus (ヒューマンアカデミー日本語学校大阪校)</option>
-<option>ISI Language School Osaka (ISIランゲージスクール大阪校)</option>
-<option>Kyoto Institute of Language and Culture (京都言語文化学院)</option>
-<option>ISI Language School Kyoto (ISIランゲージスクール京都校)</option>
-<option>Kyoto Computer Gakuin Kamogawa Campus Kyoto Japanese Training Center (京都コンピュータ学院鴨川校京都日本語研修センター)</option>
-<option>Ashiya International Academy Osaka Campus (芦屋国際学院 大阪校)</option>
-<option>Kyoto Asuka Academia (京都あすかアカデミア)</option>
-<option>Osaka Christian Junior College Japanese Course (大阪キリスト教短期大学 日本語別科)</option>
-<option>Katsugaku Shoin (活学書院)</option>
-<option>Osaka International Foreign Language Academy (大阪国際外語学院)</option>
-<option>SCG Japanese Language School (SCG日本語学校)</option>
-<option>Shumei Kobe International Academy (秀明神戸国際学院)</option>
-<option>Yuchi International Japanese Language Academy (游知国際日本語学院)</option>
-<option>Kyoto Minsai Japanese Language School (京都民際日本語学校)</option>
-<option>Keishin Language Academy Kyoto Chuo Campus (京進ランゲージアカデミー京都中央校)</option>
-<option>Keishin Language Academy Biwako Campus (京進ランゲージアカデミーびわこ校)</option>
-<option>Asian International Center (アジアンインターナショナルセンター)</option>
-<option>KOKORO College Japan (KOKORO COLLEGE JAPAN)</option>
-<option>INC Japanese Language Institute (INC日本語学院)</option>
-<option>HLA Japanese Language School (HLA日本語学校)</option>
-<option>Nagano Business Foreign Language College (長野ビジネス外語カレッジ)</option>
-<option>Nara International Japanese Language School (奈良国際日本語学校)</option>
-<option>Kanazawa International Academy (金沢国際学院)</option>
-<option>Minami Osaka International Language School (南大阪国際語学学校)</option>
-<option>Nara General Business College (奈良総合ビジネス専門学校)</option>
-<option>Kansai Language Academy (関西語言学院)</option>
-<option>Japan Cultural Education Institute (日本文化教育学院)</option>
-<option>Aim Nara International Academy (エイム奈良国際アカデミー)</option>
-<option>Oarai International Exchange Academy (大洗国際交流アカデミー)</option>
-<option>JSL Japanese Academy (JSL日本アカデミー)</option>
-<option>SANWA Foreign Language Institute (SANWA外国語学院)</option>
-<option>Japan International Language Academy Kyoto Campus (日本国際語学アカデミー・京都校)</option>
-<option>Osaka New Point Japanese Language School (大阪ニューポイント日本語学校)</option>
-<option>YIC Kyoto Japanese Language Institute (YIC京都日本語学院)</option>
-<option>Waseda Language Academy Yokohama Campus (早稲田言語学院横浜校)</option>
-<option>JAC Education Academy (JAC教育学院)</option>
-<option>Nissei Japanese Language Institute (日生日本語学園)</option>
-<option>Kyoto Nishiyama Junior College Japanese Course (京都西山短期大学 別科)</option>
-<option>Fujito Foreign Language Institute (富藤外国語学院)</option>
-<option>Clover Institute (クローバー学院)</option>
-<option>T&Y Japanese Language School (T&Y日本語学校)</option>
-<option>Toa University International Student Course (東亜大学留学生別科)</option>
-<option>Osaka International Academy (大阪国際アカデミー)</option>
-<option>H&A Japanese Language School (H&A日本語学校)</option>
-<option>Japanese Language Center (日本語センター)</option>
-<option>Mercury Japanese Language Institute (マーキュリー日本語学院)</option>
-<option>Hamamatsu Japanese Language School (浜松日本語学院)</option>
-<option>Kamei Gakuen Japanese Language School Kyoto Campus (瓶井学園日本語学校京都校)</option>
-<option>Tochinoki Japanese Language School (とちの木日本語学院)</option>
-<option>Asahi Japanese Language School (あさひ日本語学校)</option>
-<option>Japan Wellness Sports University (日本ウェルネススポーツ大学)</option>
-<option>Osaka Japanese Language Education Center (大阪日本語教育センター)</option>
-<option>Fukui Language Academy (福井ランゲージアカデミー)</option>
-<option>Sochi International Academy (創智国際学院)</option>
-<option>Yell Gakuen (エール学園)</option>
-<option>IGL Medical Welfare College (IGL医療福祉専門学校)</option>
-<option>ARMS Japanese Language School (ARMS日本語学校)</option>
-<option>Nara Foreign Language Academy (奈良外語学院)</option>
-<option>International Future Academy (国際未来学院)</option>
-<option>Heisei Medical Gakuen College Japanese Department (平成医療学園専門学校 日本語学科)</option>
-<option>Kurashiki Foreign Language Academy (倉敷外語学院)</option>
-<option>JVC Academy (JVCアカデミー)</option>
-<option>Peer Bridge International Academy (ピアブリッジ国際学院)</option>
-<option>TLS Fukuroi (TLS袋井)</option>
-<option>Kyorin International Language Institute (杏林国際語学院)</option>
-<option>Osaka Japanese Language Academy (大阪日本語アカデミー)</option>
-<option>Sakura Japanese Language Institute (さくら日本語学院)</option>
-<option>Hotsuma International School Osaka Campus (ホツマインターナショナルスクール大阪校)</option>
-<option>Kobe KR Academy (神戸KR学院)</option>
-<option>Hiroshima Welfare College (広島福祉専門学校)</option>
-<option>Osaka Japanese Language School (大阪日本語学院)</option>
-<option>Nissei Japanese Language Institute Nagoya Campus (日生日本語学園名古屋)</option>
-<option>Tokyo Foreign Language Academy (東京外国語学院)</option>
-<option>ACC Japanese Language Institute (ACC日本語学院)</option>
-<option>Ryoma Design & Beauty College (龍馬デザイン・ビューティ専門学校)</option>
-<option>Kobe World Academy (神戸ワールド学院)</option>
-<option>Meric Japanese Language School (メリック日本語学校)</option>
-<option>Manwa International Education Institute (万和国際教育学院)</option>
-<option>Discovery Japanese Language School (DISCOVERY日本語学校)</option>
-<option>Shin-Osaka Foreign Language Academy (新大阪外国語学院)</option>
-<option>Kansai International Education Academy (関西国際教育学院)</option>
-<option>Kobe Toyo Japanese Language School (神戸東洋日本語学院)</option>
-<option>Keishin Language Academy Kobe Campus (京進ランゲージアカデミー神戸校)</option>
-<option>Osafune Japanese Language Institute (長船日本語学院)</option>
-<option>Kyushu Ikusai Foreign Language Academy (九州育才外語学院)</option>
-<option>Saitama Prie Japanese Language School (埼玉プリエ日本語学校)</option>
-<option>Kobe Nichigo Academy (神戸日語学院)</option>
-<option>Osaka Tourism Business Japanese Language School (大阪観光ビジネス日本語学院)</option>
-<option>Tokyo International Gakuen Foreign Language College (東京国際学園外語専門学校)</option>
-<option>Human Academy Japanese Language School Kobe Campus (ヒューマンアカデミー日本語学校神戸校)</option>
-<option>Yamagata V. College (山形V.カレッジ)</option>
-<option>Japan Culture & Economics Institute (日本文化経済学院)</option>
-<option>Kurume International Exchange Academy (くるめ国際交流学院)</option>
-<option>Seigan Japanese Language School (せいがん日本語学校)</option>
-<option>Matsumoto International Japanese Language School (松本国際日本語学校)</option>
-<option>Chubu International Institute (中部国際学院)</option>
-<option>Okayama Foreign Language Academy (岡山外語学院)</option>
-<option>Japan Wellness Sports College Hiroshima Campus (日本ウェルネススポーツ専門学校広島校)</option>
-<option>Kyoto Reigaku International Academy (京都励学国際学院)</option>
-<option>Haku Gakuin (博学院)</option>
-<option>Kobe Shin-Nagata Japanese Language School (神戸新長田日本語学院)</option>
-<option>Osaka University of Tourism Itami Satellite Campus (大阪観光大学伊丹サテライト校)</option>
-<option>J International Academy (J国際学院)</option>
-<option>Heart Japanese Language School (はあと日本語学校)</option>
-<option>Heisei Medical Gakuen College (平成医療学園専門学校)</option>
-<option>Chuo Technical School OSAKA (中央工学校OSAKA)</option>
-<option>Beppu Mizobe Gakuen Junior College (別府溝部学園短期大学)</option>
-<option>Kakegawa Japanese Language School (掛川日本語学校)</option>
-<option>Kanazawa Japanese Language School (金沢日本語学校)</option>
-<option>Nikko Japanese Language Institute (日興日本語学院)</option>
-<option>Alice Gakuen Vocational School (専門学校アリス学園)</option>
-<option>Kyushu Surveying College (九州測量専門学校)</option>
-<option>NAS Japanese Language School (NAS日本語学校)</option>
-<option>Japan Engineering & Information College (日本理工情報専門学校)</option>
-<option>Urawa International Institute Tokyo Campus (浦和国際学院東京校)</option>
-<option>Asia Gakuin (アジア学院)</option>
-<option>Osaka Eisai Japanese Language Institute (大阪英才日本語学院)</option>
-<option>Takarazuka University of Medical and Health Care Tokyo Campus Japanese Course (宝塚医療大学 東京キャンパス留学生別科)</option>
-<option>Seikyu International College (聖鳩国際カレッジ)</option>
-<option>Orio Aishin Junior College (折尾愛真短期大学)</option>
-<option>Osaka Frontier Japanese Language School (大阪フロンティア日本語学校)</option>
-<option>Sapporo Language Center (札幌ランゲージセンター)</option>
-<option>Shuto Foreign Language Kansai Gakuin (首都外語関西学院)</option>
-<option>Higashikawa International Culture Welfare College (東川国際文化福祉専門学校)</option>
-<option>Tokuyama General Business College (徳山総合ビジネス専門学校)</option>
-<option>Aiwa Foreign Language Academy (愛和外語学院)</option>
-<option>JPGA Japan Global Academy (JPGA日本グローバルアカデミー)</option>
-</datalist>
-
-<label class="field-label">卒業予定年月（例：2027/3） / Expected Graduation Date (Example: 2027/3) *</label>
-<select id="graduation">
-  <option value="">Select</option>
-  <option value="2026/9">(2026年9月) September, 2026</option>
-  <option value="2027/3">(2027年3月) March, 2027</option>
-  <option value="2027/9">(2027年9月) September, 2027</option>
-  <option value="2028/3">(2028年3月) March, 2028</option>
-</select>
-
-<label class="field-label">現在の日本語レベル / Current Japanese Proficiency Level *</label>
-<div class="radio-group">
-  <div class="radio-option">
-    <input type="radio" name="japaneseLevel" id="jlpt-n1" value="日本語能力試験（JLPT）N1相当 / Equivalent to the JLPT N1">
-    <label for="jlpt-n1">日本語能力試験（JLPT）N1相当 / Equivalent to the JLPT N1</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="japaneseLevel" id="jlpt-n2" value="日本語能力試験（JLPT）N2相当 / Equivalent to the JLPT N2">
-    <label for="jlpt-n2">日本語能力試験（JLPT）N2相当 / Equivalent to the JLPT N2</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="japaneseLevel" id="jlpt-n3" value="日本語能力試験（JLPT）N3相当 / Equivalent to the JLPT N3">
-    <label for="jlpt-n3">日本語能力試験（JLPT）N3相当 / Equivalent to the JLPT N3</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="japaneseLevel" id="jlpt-n4" value="日本語能力試験（JLPT）N4相当 / Equivalent to the JLPT N4">
-    <label for="jlpt-n4">日本語能力試験（JLPT）N4相当 / Equivalent to the JLPT N4</label>
-  </div>
-  <div class="radio-option">
-    <input type="radio" name="japaneseLevel" id="jlpt-n5" value="日本語能力試験（JLPT）N5相当 / Equivalent to the JLPT N5">
-    <label for="jlpt-n5">日本語能力試験（JLPT）N5相当 / Equivalent to the JLPT N5</label>
-  </div>
-</div>
-
-<div id="error" class="error"></div>
-
-<button onclick="submitForm()">Submit & Download PDF</button>
-</div>
-
-<div id="pdfTemplate" style="display:none; font-family: Arial; padding:30px; width:800px; background:white;">
-
-  <h2 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">
-    Student Information Form
-  </h2>
-
-  <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:14px;">
-    
-    <tr>
-      <td style="border:1px solid #000; padding:10px; width:30%;"><b>氏名</b></td>
-      <td id="pdf-name" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>カタカナ</b></td>
-      <td id="pdf-katakana" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>性別</b></td>
-      <td id="pdf-sex" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>国籍</b></td>
-      <td id="pdf-nationality" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>電話番号</b></td>
-      <td id="pdf-phone" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>Email</b></td>
-      <td id="pdf-email" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>学校</b></td>
-      <td id="pdf-school" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>卒業予定</b></td>
-      <td id="pdf-graduation" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-    <tr>
-      <td style="border:1px solid #000; padding:10px;"><b>日本語レベル</b></td>
-      <td id="pdf-japanese" style="border:1px solid #000; padding:10px;"></td>
-    </tr>
-
-  </table>
-
-  <p style="margin-top:30px; text-align:right;">
-    Date: <span id="pdf-date"></span>
-  </p>
-
-</div>
-<script>
-const name = localStorage.getItem("username");
-
-if (name) {
-  document.getElementById("message").innerText = name + " さん、ありがとうございました！";
-  localStorage.removeItem("username"); // optional (clean storage)
-}
-</script>
-</body>
-</html>
