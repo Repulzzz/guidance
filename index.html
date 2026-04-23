@@ -30,7 +30,21 @@ function submitForm() {
     japaneseLevel: getRadioValue("japaneseLevel"),
   };
 
-  // ✅ VALIDATION
+  // ✅ ADD HERE 👇 (before validation)
+  const otherRadio = document.getElementById("nationality-other");
+
+  if (otherRadio.checked) {
+    const otherValue = document.getElementById("nationality-other-input").value.trim();
+
+    if (!otherValue) {
+      showError("Please specify nationality.");
+      return;
+    }
+
+    data.nationality = otherValue;
+  }
+
+  // ✅ VALIDATION (keep this AFTER the fix)
   for (let key in data) {
     if (key === "email") continue;
     if (!data[key]) {
@@ -47,6 +61,7 @@ function submitForm() {
   showError("");
 
   generatePDF(data);
+  sendToGoogleSheets(data);
 
   setTimeout(() => {
     window.location.href = "thankyou.html";
@@ -54,6 +69,7 @@ function submitForm() {
 }
 // 📊 SEND TO GOOGLE SHEETS
 // =========================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 function sendToGoogleSheets(data) {
   const formData = new FormData();
   formData.append("name", data.name);
@@ -66,7 +82,7 @@ function sendToGoogleSheets(data) {
   formData.append("graduation", data.graduation);
   formData.append("japaneseLevel", data.japaneseLevel);
 
-  fetch(SCRIPT_URL, {
+  fetch("https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec", {
     method: "POST",
     body: formData
   })
@@ -78,7 +94,6 @@ function sendToGoogleSheets(data) {
     console.error("❌ Error sending to Google Sheets:", error);
   });
 }
-
 // =========================
 // 📄 PDF GENERATION
 // =========================
@@ -182,6 +197,22 @@ function getRadioValue(name) {
 
 function showError(msg) {
   document.getElementById("error").innerText = msg;
+}
+  function handleNationalityOther() {
+  const otherRadio = document.getElementById("nationality-other");
+  const otherInput = document.getElementById("nationality-other-input");
+
+  if (otherRadio.checked) {
+    otherInput.disabled = false;
+  } else {
+    otherInput.disabled = true;
+    otherInput.value = "";
+  }
+}
+
+function updateOtherValue() {
+  const otherInput = document.getElementById("nationality-other-input");
+  document.getElementById("nationality-other").value = otherInput.value;
 }
 </script>
 
