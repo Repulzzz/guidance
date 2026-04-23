@@ -52,6 +52,32 @@ function submitForm() {
     window.location.href = "thankyou.html";
   }, 500);
 }
+// 📊 SEND TO GOOGLE SHEETS
+// =========================
+function sendToGoogleSheets(data) {
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("katakana", data.katakana);
+  formData.append("sex", data.sex);
+  formData.append("nationality", data.nationality);
+  formData.append("phone", data.phone);
+  formData.append("email", data.email);
+  formData.append("school", data.school);
+  formData.append("graduation", data.graduation);
+  formData.append("japaneseLevel", data.japaneseLevel);
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  })
+  .then(response => response.json())
+  .then(result => {
+    console.log("✅ Data sent to Google Sheets:", result);
+  })
+  .catch(error => {
+    console.error("❌ Error sending to Google Sheets:", error);
+  });
+}
 
 // =========================
 // 📄 PDF GENERATION
