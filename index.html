@@ -246,22 +246,22 @@ document.addEventListener("DOMContentLoaded", () => {
     doc.save(`student_${data.name.replace(/\s/g, '_')}.pdf`);
   }
 
-  async function sendToSheet(data) {
-    const params = new URLSearchParams(data);
+async function sendToSheet(data) {
+  const params = new URLSearchParams(data);
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: params
-      });
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // ✅ IMPORTANT
+      body: params
+    });
 
-      return true;
-    } catch (err) {
-      console.error(err);
-      showNotification('❌ シート送信失敗', 'error');
-      return false;
-    }
+    return true; // assume success
+  } catch (err) {
+    console.error(err);
+    return false;
   }
+}
 
   document.getElementById('submitBtn').addEventListener('click', async function () {
     const data = validate();
