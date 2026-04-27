@@ -43,7 +43,6 @@ function submitForm() {
 
   showError("");
 
-  // 🔗 Send to Google Sheets FIRST (Replace YOUR_WEB_APP_URL with actual URL)
   fetch("https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec", {
     method: "POST",
     body: JSON.stringify(data)
