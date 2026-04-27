@@ -158,52 +158,217 @@ function updateOtherValue() {
     otherRadio.value = "";
   }
 }
-  const schools = [
-  "Human Academy Japanese Language School Osaka Campus",
-  "ISI Language School Osaka",
-  "Kyoto Institute of Language and Culture",
-  "ISI Language School Kyoto",
-  "Kyoto Computer Gakuin Kamogawa Campus Kyoto Japanese Training Center",
-  "Kyoto Minsai Japanese Language School",
-  "Keishin Language Academy Kyoto Chuo Campus"
-  // 👉 add your full list here
+ const schools = [
+"Human Academy Japanese Language School Osaka Campus (ヒューマンアカデミー日本語学校大阪校)",
+"ISI Language School Osaka (ISIランゲージスクール大阪校)",
+"Kyoto Institute of Language and Culture (京都言語文化学院)",
+"ISI Language School Kyoto (ISIランゲージスクール京都校)",
+"Kyoto Computer Gakuin Kamogawa Campus Kyoto Japanese Training Center (京都コンピュータ学院鴨川校京都日本語研修センター)",
+"Ashiya International Academy Osaka Campus (芦屋国際学院 大阪校)",
+"Kyoto Asuka Academia (京都あすかアカデミア)",
+"Osaka Christian Junior College Japanese Course (大阪キリスト教短期大学 日本語別科)",
+"Katsugaku Shoin (活学書院)",
+"Osaka International Foreign Language Academy (大阪国際外語学院)",
+"SCG Japanese Language School (SCG日本語学校)",
+"Shumei Kobe International Academy (秀明神戸国際学院)",
+"Yuchi International Japanese Language Academy (游知国際日本語学院)",
+"Kyoto Minsai Japanese Language School (京都民際日本語学校)",
+"Keishin Language Academy Kyoto Chuo Campus (京進ランゲージアカデミー京都中央校)",
+"Keishin Language Academy Biwako Campus (京進ランゲージアカデミーびわこ校)",
+"Asian International Center (アジアンインターナショナルセンター)",
+"KOKORO College Japan (KOKORO COLLEGE JAPAN)",
+"INC Japanese Language Institute (INC日本語学院)",
+"HLA Japanese Language School (HLA日本語学校)",
+"Nagano Business Foreign Language College (長野ビジネス外語カレッジ)",
+"Nara International Japanese Language School (奈良国際日本語学校)",
+"Kanazawa International Academy (金沢国際学院)",
+"Minami Osaka International Language School (南大阪国際語学学校)",
+"Nara General Business College (奈良総合ビジネス専門学校)",
+"Kansai Language Academy (関西語言学院)",
+"Japan Cultural Education Institute (日本文化教育学院)",
+"Aim Nara International Academy (エイム奈良国際アカデミー)",
+"Oarai International Exchange Academy (大洗国際交流アカデミー)",
+"JSL Japanese Academy (JSL日本アカデミー)",
+"SANWA Foreign Language Institute (SANWA外国語学院)",
+"Japan International Language Academy Kyoto Campus (日本国際語学アカデミー・京都校)",
+"Osaka New Point Japanese Language School (大阪ニューポイント日本語学校)",
+"YIC Kyoto Japanese Language Institute (YIC京都日本語学院)",
+"Waseda Language Academy Yokohama Campus (早稲田言語学院横浜校)",
+"JAC Education Academy (JAC教育学院)",
+"Nissei Japanese Language Institute (日生日本語学園)",
+"Kyoto Nishiyama Junior College Japanese Course (京都西山短期大学 別科)",
+"Fujito Foreign Language Institute (富藤外国語学院)",
+"Clover Institute (クローバー学院)",
+"T&Y Japanese Language School (T&Y日本語学校)",
+"Toa University International Student Course (東亜大学留学生別科)",
+"Osaka International Academy (大阪国際アカデミー)",
+"H&A Japanese Language School (H&A日本語学校)",
+"Japanese Language Center (日本語センター)",
+"Mercury Japanese Language Institute (マーキュリー日本語学院)",
+"Hamamatsu Japanese Language School (浜松日本語学院)",
+"Kamei Gakuen Japanese Language School Kyoto Campus (瓶井学園日本語学校京都校)",
+"Tochinoki Japanese Language School (とちの木日本語学院)",
+"Asahi Japanese Language School (あさひ日本語学校)",
+"Japan Wellness Sports University (日本ウェルネススポーツ大学)",
+"Osaka Japanese Language Education Center (大阪日本語教育センター)",
+"Fukui Language Academy (福井ランゲージアカデミー)",
+"Sochi International Academy (創智国際学院)",
+"Yell Gakuen (エール学園)",
+"IGL Medical Welfare College (IGL医療福祉専門学校)",
+"ARMS Japanese Language School (ARMS日本語学校)",
+"Nara Foreign Language Academy (奈良外語学院)",
+"International Future Academy (国際未来学院)",
+"Heisei Medical Gakuen College Japanese Department (平成医療学園専門学校 日本語学科)",
+"Kurashiki Foreign Language Academy (倉敷外語学院)",
+"JVC Academy (JVCアカデミー)",
+"Peer Bridge International Academy (ピアブリッジ国際学院)",
+"TLS Fukuroi (TLS袋井)",
+"Kyorin International Language Institute (杏林国際語学院)",
+"Osaka Japanese Language Academy (大阪日本語アカデミー)",
+"Sakura Japanese Language Institute (さくら日本語学院)",
+"Hotsuma International School Osaka Campus (ホツマインターナショナルスクール大阪校)",
+"Kobe KR Academy (神戸KR学院)",
+"Hiroshima Welfare College (広島福祉専門学校)",
+"Osaka Japanese Language School (大阪日本語学院)",
+"Nissei Japanese Language Institute Nagoya Campus (日生日本語学園名古屋)",
+"Tokyo Foreign Language Academy (東京外国語学院)",
+"ACC Japanese Language Institute (ACC日本語学院)",
+"Ryoma Design & Beauty College (龍馬デザイン・ビューティ専門学校)",
+"Kobe World Academy (神戸ワールド学院)",
+"Meric Japanese Language School (メリック日本語学校)",
+"Manwa International Education Institute (万和国際教育学院)",
+"Discovery Japanese Language School (DISCOVERY日本語学校)",
+"Shin-Osaka Foreign Language Academy (新大阪外国語学院)",
+"Kansai International Education Academy (関西国際教育学院)",
+"Kobe Toyo Japanese Language School (神戸東洋日本語学院)",
+"Keishin Language Academy Kobe Campus (京進ランゲージアカデミー神戸校)",
+"Osafune Japanese Language Institute (長船日本語学院)",
+"Kyushu Ikusai Foreign Language Academy (九州育才外語学院)",
+"Saitama Prie Japanese Language School (埼玉プリエ日本語学校)",
+"Kobe Nichigo Academy (神戸日語学院)",
+"Osaka Tourism Business Japanese Language School (大阪観光ビジネス日本語学院)",
+"Tokyo International Gakuen Foreign Language College (東京国際学園外語専門学校)",
+"Human Academy Japanese Language School Kobe Campus (ヒューマンアカデミー日本語学校神戸校)",
+"Yamagata V. College (山形V.カレッジ)",
+"Japan Culture & Economics Institute (日本文化経済学院)",
+"Kurume International Exchange Academy (くるめ国際交流学院)",
+"Seigan Japanese Language School (せいがん日本語学校)",
+"Matsumoto International Japanese Language School (松本国際日本語学校)",
+"Chubu International Institute (中部国際学院)",
+"Okayama Foreign Language Academy (岡山外語学院)",
+"Japan Wellness Sports College Hiroshima Campus (日本ウェルネススポーツ専門学校広島校)",
+"Kyoto Reigaku International Academy (京都励学国際学院)",
+"Haku Gakuin (博学院)",
+"Kobe Shin-Nagata Japanese Language School (神戸新長田日本語学院)",
+"Osaka University of Tourism Itami Satellite Campus (大阪観光大学伊丹サテライト校)",
+"J International Academy (J国際学院)",
+"Heart Japanese Language School (はあと日本語学校)",
+"Heisei Medical Gakuen College (平成医療学園専門学校)",
+"Chuo Technical School OSAKA (中央工学校OSAKA)",
+"Beppu Mizobe Gakuen Junior College (別府溝部学園短期大学)",
+"Kakegawa Japanese Language School (掛川日本語学校)",
+"Kanazawa Japanese Language School (金沢日本語学校)",
+"Nikko Japanese Language Institute (日興日本語学院)",
+"Alice Gakuen Vocational School (専門学校アリス学園)",
+"Kyushu Surveying College (九州測量専門学校)",
+"NAS Japanese Language School (NAS日本語学校)",
+"Japan Engineering & Information College (日本理工情報専門学校)",
+"Urawa International Institute Tokyo Campus (浦和国際学院東京校)",
+"Asia Gakuin (アジア学院)",
+"Osaka Eisai Japanese Language Institute (大阪英才日本語学院)",
+"Takarazuka University of Medical and Health Care Tokyo Campus Japanese Course (宝塚医療大学 東京キャンパス留学生別科)",
+"Seikyu International College (聖鳩国際カレッジ)",
+"Orio Aishin Junior College (折尾愛真短期大学)",
+"Osaka Frontier Japanese Language School (大阪フロンティア日本語学校)",
+"Sapporo Language Center (札幌ランゲージセンター)",
+"Shuto Foreign Language Kansai Gakuin (首都外語関西学院)",
+"Higashikawa International Culture Welfare College (東川国際文化福祉専門学校)",
+"Tokuyama General Business College (徳山総合ビジネス専門学校)",
+"Aiwa Foreign Language Academy (愛和外語学院)",
+"JPGA Japan Global Academy (JPGA日本グローバルアカデミー)"
 ];
 
-const input = document.getElementById("school");
-const suggestionBox = document.getElementById("suggestions");
+document.addEventListener("DOMContentLoaded", function () {
 
-input.addEventListener("input", function () {
-  const value = this.value.toLowerCase();
-  suggestionBox.innerHTML = "";
+  const input = document.getElementById("school");
+  const box = document.getElementById("suggestions");
 
-  if (!value) {
-    suggestionBox.style.display = "none";
-    return;
-  }
+  let currentIndex = -1;
 
-  const filtered = schools.filter(s => s.toLowerCase().includes(value));
+  input.addEventListener("input", function () {
+    const value = this.value.toLowerCase();
+    box.innerHTML = "";
+    currentIndex = -1;
 
-  filtered.slice(0, 8).forEach(item => {
-    const div = document.createElement("div");
-    div.classList.add("suggestion-item");
-    div.textContent = item;
+    if (!value) {
+      box.style.display = "none";
+      return;
+    }
 
-    div.onclick = () => {
-      input.value = item;
-      suggestionBox.innerHTML = "";
-      suggestionBox.style.display = "none";
-    };
+    const filtered = schools.filter(s =>
+      s.toLowerCase().includes(value)
+    );
 
-    suggestionBox.appendChild(div);
+    filtered.slice(0, 10).forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "suggestion-item";
+
+      // Highlight match
+      const regex = new RegExp(`(${value})`, "gi");
+      div.innerHTML = item.replace(regex, "<b>$1</b>");
+
+      div.addEventListener("click", () => {
+        input.value = item;
+        box.style.display = "none";
+      });
+
+      box.appendChild(div);
+    });
+
+    box.style.display = "block";
   });
 
-  suggestionBox.style.display = "block";
-});
+  // ✅ KEYBOARD SUPPORT (LIKE GOOGLE)
+  input.addEventListener("keydown", function (e) {
+    const items = box.querySelectorAll(".suggestion-item");
 
-document.addEventListener("click", (e) => {
-  if (!e.target.closest("#school")) {
-    suggestionBox.style.display = "none";
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      currentIndex++;
+      if (currentIndex >= items.length) currentIndex = 0;
+      setActive(items);
+    }
+
+    else if (e.key === "ArrowUp") {
+      currentIndex--;
+      if (currentIndex < 0) currentIndex = items.length - 1;
+      setActive(items);
+    }
+
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      if (currentIndex > -1) {
+        items[currentIndex].click();
+      }
+    }
+  });
+
+  function setActive(items) {
+    items.forEach(item => item.classList.remove("active"));
+    if (currentIndex >= 0) {
+      items[currentIndex].classList.add("active");
+      items[currentIndex].scrollIntoView({ block: "nearest" });
+    }
   }
+
+  // Hide when clicking outside
+  document.addEventListener("click", e => {
+    if (!e.target.closest("#school")) {
+      box.style.display = "none";
+    }
+  });
+
 });
 </script>
 
@@ -325,6 +490,9 @@ button:hover {
 .suggestion-item:hover,
 .suggestion-item.active {
   background: #f0f0f0;
+}
+  .suggestion-item.active {
+  background: #e6e6e6;
 }
 </style>
 </head>
