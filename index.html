@@ -149,130 +149,143 @@
 </div>
 
 <script>
-// 🔴 REPLACE WITH YOUR NEW DEPLOYED URL
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7NzOjuyNtlOuPd8hDELhi_iD0YY0l3pvyu8kX7BDpRfaNXjn8Lg6mQd-8CRAerlDSDg/exec";
 
-function showNotification(message, type) {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-  setTimeout(() => notification.remove(), 3000);
-}
+// Wait until page loads
+document.addEventListener("DOMContentLoaded", () => {
 
-// Handle other nationality
-const otherRadio = document.getElementById('natOther');
-const otherInput = document.getElementById('otherNationality');
-
-function handleOther() {
-  otherInput.disabled = !otherRadio.checked;
-  if (!otherRadio.checked) otherInput.value = '';
-}
-otherRadio?.addEventListener('change', handleOther);
-document.querySelectorAll('input[name="nationality"]').forEach(r => r.addEventListener('change', handleOther));
-
-function getNationality() {
-  const selected = document.querySelector('input[name="nationality"]:checked');
-  if (!selected) return '';
-  return selected.value === '' ? otherInput.value : selected.value;
-}
-
-function getJapaneseLevel() {
-  const selected = document.querySelector('input[name="jpLevel"]:checked');
-  return selected ? selected.value : '';
-}
-
-function validate() {
-  const fields = {
-    name: document.getElementById('name').value.trim(),
-    katakana: document.getElementById('katakana').value.trim(),
-    sex: document.getElementById('sex').value,
-    nationality: getNationality(),
-    phone: document.getElementById('phone').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    school: document.getElementById('school').value.trim(),
-    graduation: document.getElementById('graduation').value,
-    jpLevel: getJapaneseLevel()
-  };
-  
-  if (!fields.name) { showNotification('氏名を入力してください', 'error'); return false; }
-  if (!fields.katakana) { showNotification('カタカナを入力してください', 'error'); return false; }
-  if (!fields.sex) { showNotification('性別を選択してください', 'error'); return false; }
-  if (!fields.nationality) { showNotification('国籍を選択してください', 'error'); return false; }
-  if (!fields.phone) { showNotification('電話番号を入力してください', 'error'); return false; }
-  if (!fields.email || !fields.email.includes('@')) { showNotification('有効なメールを入力してください', 'error'); return false; }
-  if (!fields.school) { showNotification('学校名を入力してください', 'error'); return false; }
-  if (!fields.graduation) { showNotification('卒業予定を選択してください', 'error'); return false; }
-  if (!fields.jpLevel) { showNotification('日本語レベルを選択してください', 'error'); return false; }
-  
-  return fields;
-}
-
-function generatePDF(data) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFillColor(30, 60, 120);
-  doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
-  doc.text('Student Registration', 105, 20, { align: 'center' });
-  doc.setTextColor(0, 0, 0);
-  let y = 45;
-  const fields = [
-    ['Name:', data.name], ['Katakana:', data.katakana], ['Sex:', data.sex],
-    ['Nationality:', data.nationality], ['Phone:', data.phone], ['Email:', data.email],
-    ['School:', data.school], ['Graduation:', data.graduation], ['Japanese Level:', data.jpLevel]
-  ];
-  fields.forEach(field => {
-    if (field[1]) {
-      doc.text(field[0], 20, y);
-      doc.text(field[1], 70, y);
-      y += 10;
-    }
-  });
-  doc.save(`student_${data.name.replace(/\s/g, '_')}.pdf`);
-}
-
-async function sendToSheet(data) {
-  const params = new URLSearchParams();
-  params.append('name', data.name);
-  params.append('katakana', data.katakana);
-  params.append('sex', data.sex);
-  params.append('nationality', data.nationality);
-  params.append('phone', data.phone);
-  params.append('email', data.email);
-  params.append('school', data.school);
-  params.append('graduation', data.graduation);
-  params.append('japaneseLevel', data.jpLevel);
-  
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: params
-    });
-    return true;
-  } catch(err) {
-    return false;
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
   }
-}
 
-document.getElementById('submitBtn').addEventListener('click', async function() {
-  const data = validate();
-  if (!data) return;
-  
-  this.textContent = '⏳ 送信中...';
-  this.disabled = true;
-  
-  generatePDF(data);
-  await sendToSheet(data);
-  
-  showNotification('✅ 送信完了！PDFを確認してください', 'success');
-  this.textContent = '✅ 送信完了';
-  setTimeout(() => {
-    this.textContent = '✅ 送信してPDFをダウンロード';
-    this.disabled = false;
-  }, 2000);
+  const otherRadio = document.getElementById('natOther');
+  const otherInput = document.getElementById('otherNationality');
+
+  function handleOther() {
+    otherInput.disabled = !otherRadio.checked;
+    if (!otherRadio.checked) otherInput.value = '';
+  }
+
+  document.querySelectorAll('input[name="nationality"]').forEach(r => {
+    r.addEventListener('change', handleOther);
+  });
+
+  function getNationality() {
+    const selected = document.querySelector('input[name="nationality"]:checked');
+    if (!selected) return '';
+    return selected.value === '' ? otherInput.value : selected.value;
+  }
+
+  function getJapaneseLevel() {
+    const selected = document.querySelector('input[name="jpLevel"]:checked');
+    return selected ? selected.value : '';
+  }
+
+  function validate() {
+    const fields = {
+      name: document.getElementById('name').value.trim(),
+      katakana: document.getElementById('katakana').value.trim(),
+      sex: document.getElementById('sex').value,
+      nationality: getNationality(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      school: document.getElementById('school').value.trim(),
+      graduation: document.getElementById('graduation').value,
+      jpLevel: getJapaneseLevel()
+    };
+
+    if (!fields.name) return showNotification('氏名を入力してください', 'error');
+    if (!fields.katakana) return showNotification('カタカナを入力してください', 'error');
+    if (!fields.sex) return showNotification('性別を選択してください', 'error');
+    if (!fields.nationality) return showNotification('国籍を選択してください', 'error');
+    if (!fields.phone) return showNotification('電話番号を入力してください', 'error');
+    if (!fields.email || !fields.email.includes('@')) return showNotification('有効なメールを入力してください', 'error');
+    if (!fields.school) return showNotification('学校名を入力してください', 'error');
+    if (!fields.graduation) return showNotification('卒業予定を選択してください', 'error');
+    if (!fields.jpLevel) return showNotification('日本語レベルを選択してください', 'error');
+
+    return fields;
+  }
+
+  function generatePDF(data) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFillColor(30, 60, 120);
+    doc.rect(0, 0, 210, 30, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text('Student Registration', 105, 20, { align: 'center' });
+
+    doc.setTextColor(0, 0, 0);
+    let y = 45;
+
+    const fields = [
+      ['Name:', data.name],
+      ['Katakana:', data.katakana],
+      ['Sex:', data.sex],
+      ['Nationality:', data.nationality],
+      ['Phone:', data.phone],
+      ['Email:', data.email],
+      ['School:', data.school],
+      ['Graduation:', data.graduation],
+      ['Japanese Level:', data.jpLevel]
+    ];
+
+    fields.forEach(f => {
+      doc.text(f[0], 20, y);
+      doc.text(f[1], 70, y);
+      y += 10;
+    });
+
+    doc.save(`student_${data.name.replace(/\s/g, '_')}.pdf`);
+  }
+
+  async function sendToSheet(data) {
+    const params = new URLSearchParams(data);
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: params
+      });
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      showNotification('❌ シート送信失敗', 'error');
+      return false;
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', async function () {
+    const data = validate();
+    if (!data) return;
+
+    this.textContent = '⏳ 送信中...';
+    this.disabled = true;
+
+    generatePDF(data);
+
+    const success = await sendToSheet(data);
+
+    if (success) {
+      showNotification('✅ 送信完了！PDFを確認してください', 'success');
+    }
+
+    this.textContent = '✅ 送信完了';
+
+    setTimeout(() => {
+      this.textContent = '✅ 送信してPDFをダウンロード';
+      this.disabled = false;
+    }, 2000);
+  });
+
 });
 </script>
 </body>
